@@ -106,14 +106,17 @@ class PaperContext:
 
     def win_loss(self) -> dict:
         if self.aggregates is None:
-            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
         mat = score_matrix(self.aggregates, "f1_macro")
         if not {"ald_wknn", "power_wknn"}.issubset(mat.columns):
-            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
-        delta = mat["ald_wknn"] - mat["power_wknn"]
+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
+        # round to the same precision shown in the paper table so the text
+        # claims are traceable to the printed per-dataset deltas
+        delta = (mat["ald_wknn"] - mat["power_wknn"]).round(3)
         return {
             "wins": str(int((delta > 0).sum())),
             "losses": str(int((delta < 0).sum())),
+            "ties": str(int((delta == 0).sum())),
             "mean_delta": _fmt(delta.mean(), "+.4f"),
         }
 
@@ -126,7 +129,15 @@ class PaperContext:
         if not alphas:
             return TBD
         small = sum(1 for a in alphas if float(a) <= 0.5)
-        return f"{small}/{len(alphas)} outer-fold selections chose alpha <= 0.5"
+        counts = pd.Series(alphas).value_counts().sort_index()
+        freq = ", ".join(
+            f"alpha={k:g} ({v / len(alphas):.1%})" for k, v in counts.items()
+        )
+        return (
+            f"inner-CV selection frequencies were {freq}; "
+            f"alpha <= 0.5 was chosen in {small}/{len(alphas)} folds "
+            f"({small / len(alphas):.1%})"
+        )
 
     def q_summary(self) -> str:
         if self.best_params is None or "ald_wknn" not in set(self.best_params["method"]):
@@ -173,8 +184,8 @@ class PaperContext:
             f"Across {fried['FRIEDMAN_N']} tabular classification datasets, the Friedman test "
             f"on dataset-level Macro F1 gave chi^2({fried['FRIEDMAN_DF']}) = {fried['FRIEDMAN_STAT']} "
             f"(p = {fried['FRIEDMAN_P']}, Kendall's W = {fried['FRIEDMAN_KENDALL_W']}); "
-            f"ALD-WKNN outperformed Power-WKNN on {wl['wins']} datasets and underperformed on "
-            f"{wl['losses']} (mean delta {wl['mean_delta']})."
+            f"ALD-WKNN was ahead of Power-WKNN on {wl['wins']} datasets, behind on "
+            f"{wl['losses']}, and tied on {wl['ties']} (mean delta {wl['mean_delta']})."
         )
 
     def conclusion_result(self) -> str:
@@ -189,14 +200,15 @@ class PaperContext:
         wl = self.win_loss()
         return (
             f"a mean Macro F1 delta of {wl['mean_delta']} versus Power-WKNN "
-            f"(wins {wl['wins']}, losses {wl['losses']} across datasets). The Friedman test "
-            f"yielded p = {fried['FRIEDMAN_P']} ({decision}), while Holm-adjusted pairwise "
-            f"comparisons and rank-biserial effect sizes are reported in the results section. "
-            f"Ablation indicated that the local-density compatibility component "
-            f"({self.clipping_summary()}) and clipping behave as described in the ablation "
-            f"analysis. These findings suggest the density-compatibility penalty is "
-            f"{'supported' if fried['FRIEDMAN_P'] != TBD and float(fried['FRIEDMAN_P']) < 0.05 else 'not confirmed'} "
-            f"within the evaluated scope only, and no broader claim is made."
+            f"(wins {wl['wins']}, losses {wl['losses']}, ties {wl['ties']} across datasets). "
+            f"The Friedman test yielded p = {fried['FRIEDMAN_P']} ({decision}), so pairwise "
+            f"comparisons are at most exploratory under this design. Ablation showed the full "
+            f"clipped formulation (A3) marginally above the unclipped variant (A2) and above "
+            f"distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest "
+            f"standalone variant — consistent with density acting as a modifier rather than a "
+            f"sufficient signal by itself. These findings suggest the density-compatibility "
+            f"penalty is descriptively favorable on the evaluated benchmark but not "
+            f"statistically confirmed within this design, and no broader claim is made."
         )
 
     def runtime_table(self) -> str:
@@ -373,13 +385,15 @@ def build_discussion(ctx: PaperContext) -> str:
     lines = [
         "The discussion below is generated from the artifacts; negative results are retained.",
         "",
-        f"1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on {wl['wins']} of the "
-        f"evaluated datasets and underperformed on {wl['losses']} (mean delta {wl['mean_delta']}).",
+        f"1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on {wl['wins']} "
+        f"datasets, behind on {wl['losses']}, and tied on {wl['ties']} "
+        f"(mean delta {wl['mean_delta']}).",
         f"2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; "
         f"claims about high-dimensional, imbalanced, or difficult datasets are limited to the "
         f"evaluated set ({ctx.friedman_values().get('FRIEDMAN_N', TBD)} datasets).",
-        f"3. **Strength of the density correction.** Inner CV selected small alpha values in "
-        f"{ctx.alpha_summary()} cases, indicating how strongly the density correction was needed.",
+        f"3. **Strength of the density correction.** {ctx.alpha_summary()}. "
+        f"The frequent selection of the largest alpha value suggests the density penalty was "
+        f"active rather than negligible, but selection frequencies alone do not prove benefit.",
         f"4. **Sensitivity to q.** Selection counts: {ctx.q_summary()}.",
         f"5. **Clipping.** {ctx.clipping_summary()}.",
         f"6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean "

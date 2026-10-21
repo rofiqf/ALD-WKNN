@@ -64,14 +64,19 @@ def compare(stored_dir: Path, new_dir: Path, dataset: str) -> list[str]:
     pa, pb = _sorted(stored_p, key + ["row_id"]), _sorted(new_p, key + ["row_id"])
     if not (pa["y_pred"].tolist() == pb["y_pred"].tolist()):
         problems.append("predicted labels differ between runs")
-    score_cols = [c for c in pa.columns if c.startswith("score_class_")]
-    if score_cols != [c for c in pb.columns if c.startswith("score_class_")]:
-        problems.append("score column sets differ between runs")
-    else:
-        for col in score_cols:
-            if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
-                               atol=ATOL, rtol=0.0):
-                problems.append(f"score column {col!r} differs beyond atol={ATOL}")
+    # Score columns are a union across ALL datasets of a run, so a partial
+    # re-run legitimately has fewer; compare the shared columns only.
+    stored_cols = [c for c in pa.columns if c.startswith("score_class_")]
+    new_cols = [c for c in pb.columns if c.startswith("score_class_")]
+    if not set(new_cols).issubset(stored_cols):
+        problems.append(
+            f"score columns missing from stored run: {sorted(set(new_cols) - set(stored_cols))}"
+        )
+        return problems
+    for col in new_cols:
+        if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
+                           atol=ATOL, rtol=0.0):
+            problems.append(f"score column {col!r} differs beyond atol={ATOL}")
     return problems
 
 

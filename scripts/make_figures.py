@@ -86,13 +86,15 @@ def fig_ablation(cfg: dict, out_dir: Path) -> None:
         print("[figures] fig_ablation skipped: no ablation run found", flush=True)
         return
     metrics = pd.read_csv(run_dir / "metrics_outer.csv")
-    agg = dataset_aggregates(metrics, "f1_macro")
+    # one value per variant: mean of per-dataset means, std across datasets
+    per_ds = metrics.groupby(["dataset", "method"], as_index=False)["f1_macro"].mean()
+    agg = per_ds.groupby("method")["f1_macro"].agg(["mean", "std"]).reset_index()
     order = [v for v in ("A0_distance_only", "A1_density_only", "A2_ald_unclipped", "A3_ald_full")
              if v in set(agg["method"])]
     sub = agg.set_index("method").loc[order]
     fig, ax = plt.subplots(figsize=(8, 5))
-    ax.bar([_label(m) for m in order], sub["f1_macro_mean"],
-           yerr=sub["f1_macro_std"], capsize=4)
+    ax.bar([_label(m) for m in order], sub["mean"],
+           yerr=sub["std"], capsize=4)
     ax.set_ylabel("Macro F1 (mean ± std across datasets)")
     ax.set_title("Ablation: Mean Macro F1 per Variant")
     plt.xticks(rotation=20, ha="right")

@@ -5,7 +5,7 @@ keywords: "K-Nearest Neighbors; Weighted KNN; Local Density; Adaptive Weighting;
 
 # Abstract
 
-K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 1 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(2) = 2.0000 (p = 0.3679, Kendall's W = 1.0000); ALD-WKNN outperformed Power-WKNN on 0 datasets and underperformed on 1 (mean delta -0.0066). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
 
 # 1. Introduction
 
@@ -44,9 +44,16 @@ Within the literature inspected for this coursework, a narrower question remains
 
 Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
 
-| dataset   |   n_samples |   n_features |   n_classes |
-|:----------|------------:|-------------:|------------:|
-| iris      |         150 |            4 |           3 |
+| dataset                            |   n_samples |   n_features |   n_classes |
+|:-----------------------------------|------------:|-------------:|------------:|
+| iris                               |         150 |            4 |           3 |
+| wine                               |         178 |           13 |           3 |
+| seeds                              |         210 |            7 |           3 |
+| glass                              |         214 |            9 |           6 |
+| sonar                              |         208 |           60 |           2 |
+| ionosphere                         |         351 |           34 |           2 |
+| breast_cancer_wisconsin_diagnostic |         569 |           30 |           2 |
+| banknote                           |        1372 |            4 |           2 |
 
 ## 3.2 Methods
 
@@ -68,10 +75,17 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
 
 ## 4.1 Primary performance
 
-| Dataset   | Uniform KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
-|:----------|:--------------|:--------------|:--------------|:--------------|
-| iris      | 0.906 ± 0.020 | 0.919 ± 0.000 | 0.913 ± 0.009 | -0.007        |
-| Mean rank | 3.00          | 1.00          | 2.00          | —             |
+| Dataset                            | Uniform KNN   | Distance KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
+|:-----------------------------------|:--------------|:---------------|:--------------|:--------------|:--------------|
+| banknote                           | 0.998 ± 0.002 | 0.998 ± 0.002  | 0.998 ± 0.002 | 0.998 ± 0.002 | +0.000        |
+| breast_cancer_wisconsin_diagnostic | 0.961 ± 0.016 | 0.961 ± 0.016  | 0.961 ± 0.018 | 0.964 ± 0.016 | +0.003        |
+| glass                              | 0.614 ± 0.105 | 0.649 ± 0.096  | 0.645 ± 0.100 | 0.672 ± 0.089 | +0.026        |
+| ionosphere                         | 0.809 ± 0.040 | 0.809 ± 0.045  | 0.809 ± 0.045 | 0.865 ± 0.043 | +0.056        |
+| iris                               | 0.940 ± 0.052 | 0.949 ± 0.035  | 0.949 ± 0.035 | 0.949 ± 0.035 | +0.000        |
+| seeds                              | 0.918 ± 0.047 | 0.918 ± 0.045  | 0.920 ± 0.046 | 0.928 ± 0.048 | +0.008        |
+| sonar                              | 0.847 ± 0.045 | 0.847 ± 0.045  | 0.848 ± 0.039 | 0.842 ± 0.047 | -0.006        |
+| wine                               | 0.963 ± 0.029 | 0.958 ± 0.029  | 0.961 ± 0.023 | 0.970 ± 0.027 | +0.009        |
+| Mean rank                          | 2.81          | 2.94           | 2.69          | 1.56          | —             |
 
 ![fig_dataset_performance](artifacts/figures/fig_dataset_performance.png){width=80%}
 
@@ -83,9 +97,9 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
 
 | Metric   |   Datasets |   Methods |   Statistic |   df |   p-value |   Kendall W | Decision                           |
 |:---------|-----------:|----------:|------------:|-----:|----------:|------------:|:-----------------------------------|
-| f1_macro |          1 |         3 |           2 |    2 |    0.3679 |           1 | insufficient evidence to reject H0 |
+| f1_macro |          8 |         4 |           7 |    3 |    0.0719 |      0.2917 | insufficient evidence to reject H0 |
 
-The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(2)=2.0000, p=0.3679. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
+The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(3)=7.0000, p=0.0719. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
 
 # Pairwise comparisons (Wilcoxon + Holm)
 
@@ -97,14 +111,14 @@ TBD — post-hoc tests were not executed (omnibus p >= 0.05, or statistics artif
 
 # Ablation summary
 
-Source run: `20261021T143913Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
+Source run: `20261021T145634Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
 
 | Variant          | Distance   | Density compatibility   | Clipping   |   Mean Macro F1 |   Mean Rank |
 |:-----------------|:-----------|:------------------------|:-----------|----------------:|------------:|
-| A0 Distance-only | ✓          | ✗                       | N/A        |           0.919 |         1   |
-| A1 Density-only  | ✗          | ✓                       | ✓          |           0.906 |         4   |
-| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.913 |         2.5 |
-| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.913 |         2.5 |
+| A0 Distance-only | ✓          | ✗                       | N/A        |           0.884 |        3.88 |
+| A1 Density-only  | ✗          | ✓                       | ✓          |           0.893 |        3    |
+| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.901 |        1.69 |
+| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.901 |        1.44 |
 
 Interpretation guide (PROJECT_SPEC.md): A3 > A0 supports the density term;
 A3 ≈ A0 means the modification gives no clear practical benefit;
@@ -117,38 +131,65 @@ context is useful as a modifier rather than a standalone signal.
 
 # Hyperparameter selection frequency
 
-Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
+Source run: `20261021T145425Z_seed20261021_main`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
 
 ## Uniform KNN
 
 | Parameter   |   Value |   Selections |   Frequency (%) |
 |:------------|--------:|-------------:|----------------:|
-| n_neighbors |       3 |            2 |             100 |
+| n_neighbors |       3 |           62 |            51.7 |
+| n_neighbors |       5 |           28 |            23.3 |
+| n_neighbors |      15 |           16 |            13.3 |
+| n_neighbors |       9 |           14 |            11.7 |
+
+## Distance KNN
+
+| Parameter   |   Value |   Selections |   Frequency (%) |
+|:------------|--------:|-------------:|----------------:|
+| n_neighbors |       3 |           55 |            45.8 |
+| n_neighbors |       5 |           30 |            25   |
+| n_neighbors |      15 |           25 |            20.8 |
+| n_neighbors |       9 |           10 |             8.3 |
 
 ## Power-WKNN
 
 | Parameter      |   Value |   Selections |   Frequency (%) |
 |:---------------|--------:|-------------:|----------------:|
-| distance_power |       1 |            2 |             100 |
-| n_neighbors    |       3 |            2 |             100 |
+| distance_power |       1 |           73 |            60.8 |
+| distance_power |       2 |           47 |            39.2 |
+| n_neighbors    |       3 |           43 |            35.8 |
+| n_neighbors    |       5 |           33 |            27.5 |
+| n_neighbors    |      15 |           26 |            21.7 |
+| n_neighbors    |       9 |           18 |            15   |
 
 ## ALD-WKNN
 
 | Parameter         |   Value |   Selections |   Frequency (%) |
 |:------------------|--------:|-------------:|----------------:|
-| density_alpha     |     0.5 |            2 |             100 |
-| density_clip      |     3   |            2 |             100 |
-| density_neighbors |     3   |            2 |             100 |
-| distance_power    |     1   |            2 |             100 |
-| n_neighbors       |     3   |            2 |             100 |
+| density_alpha     |   2     |           69 |            57.5 |
+| density_alpha     |   0.25  |           38 |            31.7 |
+| density_alpha     |   1     |            7 |             5.8 |
+| density_alpha     |   0.5   |            6 |             5   |
+| density_clip      |   3     |          120 |           100   |
+| density_neighbors |   3     |           72 |            60   |
+| density_neighbors |   9     |           27 |            22.5 |
+| density_neighbors |   5     |           21 |            17.5 |
+| distance_power    |   2     |           64 |            53.3 |
+| distance_power    |   1     |           56 |            46.7 |
+| epsilon           |   1e-12 |          120 |           100   |
+| n_neighbors       |  15     |           43 |            35.8 |
+| n_neighbors       |   3     |           29 |            24.2 |
+| n_neighbors       |   5     |           27 |            22.5 |
+| n_neighbors       |   9     |           21 |            17.5 |
 
 ## 4.5 Runtime
 
-| Method      |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
-|:------------|--------------------:|------------------------:|:-----------------------------------|
-| ALD-WKNN    |              0.03   |                  0.0019 | 2.01x                              |
-| Uniform KNN |              0.015  |                  0.0013 | 1.00x                              |
-| Power-WKNN  |              0.0141 |                  0.0012 | 0.94x                              |
+| Method       |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
+|:-------------|--------------------:|------------------------:|:-----------------------------------|
+| ALD-WKNN     |              0.7554 |                  0.0023 | 13.46x                             |
+| Distance KNN |              0.0448 |                  0.0018 | 0.80x                              |
+| Uniform KNN  |              0.0561 |                  0.0016 | 1.00x                              |
+| Power-WKNN   |              0.0652 |                  0.0015 | 1.16x                              |
 
 ![fig_runtime](artifacts/figures/fig_runtime.png){width=80%}
 
@@ -156,20 +197,20 @@ Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold 
 
 The discussion below is generated from the artifacts; negative results are retained.
 
-1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on 0 of the evaluated datasets and underperformed on 1 (mean delta -0.0066).
-2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (1 datasets).
-3. **Strength of the density correction.** Inner CV selected small alpha values in 2/2 outer-fold selections chose alpha <= 0.5 cases, indicating how strongly the density correction was needed.
-4. **Sensitivity to q.** Selection counts: q=3: 2.
-5. **Clipping.** clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000).
+1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120).
+2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (8 datasets).
+3. **Strength of the density correction.** inner-CV selection frequencies were alpha=0.25 (31.7%), alpha=0.5 (5.0%), alpha=1 (5.8%), alpha=2 (57.5%); alpha <= 0.5 was chosen in 44/120 folds (36.7%). The frequent selection of the largest alpha value suggests the density penalty was active rather than negligible, but selection frequencies alone do not prove benefit.
+4. **Sensitivity to q.** Selection counts: q=3: 72, q=9: 27, q=5: 21.
+5. **Clipping.** clipped A3 mean Macro F1 is higher than unclipped A2 (mean difference +0.0001).
 6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean delta above; the comparison against the strongest distance baseline is the decisive one.
-7. **Practical magnitude.** The mean delta of -0.0066 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
-8. **Computational overhead.** mean fit time ALD/uniform = 2.01x, mean predict time ALD/uniform = 1.47x.
-9. **Statistical support.** Omnibus p = 0.3679; conclusions follow the adjusted p-values, not raw averages.
+7. **Practical magnitude.** The mean delta of +0.0120 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
+8. **Computational overhead.** mean fit time ALD/uniform = 13.46x, mean predict time ALD/uniform = 1.41x.
+9. **Statistical support.** Omnibus p = 0.0719; conclusions follow the adjusted p-values, not raw averages.
 10. **Consistency with initial hypotheses.** The interpretation matrix of PROJECT_SPEC.md is applied to the observed pattern without post-hoc re-framing.
 
 # 5. Conclusion
 
-This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of -0.0066 versus Power-WKNN (wins 0, losses 1 across datasets). The Friedman test yielded p = 0.3679 (no sufficient evidence of differences among method ranks), while Holm-adjusted pairwise comparisons and rank-biserial effect sizes are reported in the results section. Ablation indicated that the local-density compatibility component (clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000)) and clipping behave as described in the ablation analysis. These findings suggest the density-compatibility penalty is not confirmed within the evaluated scope only, and no broader claim is made.
+This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of +0.0120 versus Power-WKNN (wins 5, losses 1, ties 2 across datasets). The Friedman test yielded p = 0.0719 (no sufficient evidence of differences among method ranks), so pairwise comparisons are at most exploratory under this design. Ablation showed the full clipped formulation (A3) marginally above the unclipped variant (A2) and above distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest standalone variant — consistent with density acting as a modifier rather than a sufficient signal by itself. These findings suggest the density-compatibility penalty is descriptively favorable on the evaluated benchmark but not statistically confirmed within this design, and no broader claim is made.
 
 # Limitations
 
