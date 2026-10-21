@@ -1,0 +1,13 @@
+{
+  "dataset": "glass",
+  "source": "UCI",
+  "uci_id": 42,
+  "downloaded_at_utc": "2026-10-21T14:54:01.214630+00:00",
+  "n_samples": 214,
+  "n_features": 9,
+  "n_classes": 6,
+  "target_name": "Type_of_glass",
+  "source_url": "https://archive.ics.uci.edu/dataset/42/glass+identification",
+  "doi": null,
+  "sha256": "b0c07b44b3c8cc042083e86d61e482f7c414a52e898161090b85e3def4fb0850"
+}

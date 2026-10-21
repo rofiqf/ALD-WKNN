@@ -1,0 +1,13 @@
+{
+  "dataset": "breast_cancer_wisconsin_diagnostic",
+  "source": "UCI",
+  "uci_id": 17,
+  "downloaded_at_utc": "2026-10-21T14:54:07.299490+00:00",
+  "n_samples": 569,
+  "n_features": 30,
+  "n_classes": 2,
+  "target_name": "Diagnosis",
+  "source_url": "https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic",
+  "doi": "10.24432/C5DW2B",
+  "sha256": "fd628a189e116953083291855d91438a777bf4fc3d4470ec24130bdd9f756fe9"
+}

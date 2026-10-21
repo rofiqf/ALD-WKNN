@@ -1,0 +1,13 @@
+{
+  "dataset": "ionosphere",
+  "source": "UCI",
+  "uci_id": 52,
+  "downloaded_at_utc": "2026-10-21T14:54:05.423094+00:00",
+  "n_samples": 351,
+  "n_features": 34,
+  "n_classes": 2,
+  "target_name": "Class",
+  "source_url": "https://archive.ics.uci.edu/dataset/52/ionosphere",
+  "doi": "10.24432/C5W01B",
+  "sha256": "4a97beb1ee15d5f6386c7a4d3a4ad85704b386c4fe4ff9753f4cb44775c19d6c"
+}

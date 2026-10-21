@@ -1,0 +1,13 @@
+{
+  "dataset": "banknote",
+  "source": "UCI",
+  "uci_id": 267,
+  "downloaded_at_utc": "2026-10-21T14:54:08.945056+00:00",
+  "n_samples": 1372,
+  "n_features": 4,
+  "n_classes": 2,
+  "target_name": "class",
+  "source_url": "https://archive.ics.uci.edu/dataset/267/banknote+authentication",
+  "doi": "10.24432/C55P57",
+  "sha256": "faf2429502dce33bd38afc5fe863240211d9e80d8cf779c75106d18c40177dfa"
+}

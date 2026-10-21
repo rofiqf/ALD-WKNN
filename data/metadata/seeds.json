@@ -1,0 +1,13 @@
+{
+  "dataset": "seeds",
+  "source": "UCI-static",
+  "uci_id": 236,
+  "downloaded_at_utc": "2026-10-21T14:53:59.954013+00:00",
+  "n_samples": 210,
+  "n_features": 7,
+  "n_classes": 3,
+  "target_name": "target",
+  "source_url": "https://archive.ics.uci.edu/dataset/236/seeds",
+  "doi": "10.24432/C5H30K",
+  "sha256": "61cee587f2eabede2b7936b919adb9f0867dd25e10a873c0b9dc4aaecb13bfed"
+}
