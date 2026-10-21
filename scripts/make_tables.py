@@ -112,10 +112,10 @@ def ablation_summary(cfg: dict, out_dir: Path) -> None:
         "",
         df.to_markdown(index=False),
         "",
-        "Interpretation guide (PROJECT_SPEC.md): A3 > A0 supports the density term;",
-        "A3 ≈ A0 means the modification gives no clear practical benefit;",
-        "A3 > A2 indicates clipping helps; poor A1 with good A3 indicates density",
-        "context is useful as a modifier rather than a standalone signal.",
+        "Reading the ablation: A3 beating A0 is evidence for the density term; A3 on par with A0",
+        "means no clear practical gain; A3 above A2 indicates that clipping helps; a weak A1",
+        "alongside a strong A3 would show that density works as a modifier, not as a",
+        "standalone signal.",
         "",
     ]
     path.write_text("\n".join(lines), encoding="utf-8")
