@@ -1,0 +1,29 @@
+project:
+  name: "ald-wknn-paper"
+  seed: 20261021
+  output_root: "artifacts"
+
+datasets:
+  iris:
+    provider: "uci"
+    id: 53
+
+cv:
+  outer:
+    splits: 2
+    repeats: 1
+  inner:
+    splits: 2
+
+models:
+  knn_uniform:
+    k: [3]
+  power_wknn:
+    k: [3]
+    p: [1.0]
+  ald_wknn:
+    k: [3]
+    q: [3]
+    p: [1.0]
+    alpha: [0.5, 1.0]
+    clip_c: [3.0]

@@ -1,0 +1,13 @@
+{
+  "dataset": "wine",
+  "source": "UCI",
+  "uci_id": 109,
+  "downloaded_at_utc": "2026-10-21T14:41:20.909623+00:00",
+  "n_samples": 178,
+  "n_features": 13,
+  "n_classes": 3,
+  "target_name": "class",
+  "source_url": "https://archive.ics.uci.edu/dataset/109/wine",
+  "doi": "10.24432/C5PC7J",
+  "sha256": "281a4d2042b8133eb521e565e89736dd3b93b9d870582788dfab6ca7cd9882d8"
+}

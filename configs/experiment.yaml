@@ -1,0 +1,87 @@
+project:
+  name: "ald-wknn-paper"
+  seed: 20261021
+  output_root: "artifacts"
+
+datasets:
+  iris:
+    provider: "uci"
+    id: 53
+  wine:
+    provider: "uci"
+    id: 109
+  seeds:
+    provider: "uci"
+    id: 236
+  glass:
+    provider: "uci"
+    id: 42
+    drop_columns:
+      - "Id_number"
+  sonar:
+    provider: "uci"
+    id: 151
+  ionosphere:
+    provider: "uci"
+    id: 52
+  breast_cancer_wisconsin_diagnostic:
+    provider: "uci"
+    id: 17
+  banknote:
+    provider: "uci"
+    id: 267
+
+preprocessing:
+  imputer:
+    strategy: "median"
+  scaler:
+    type: "standard"
+
+cv:
+  outer:
+    type: "RepeatedStratifiedKFold"
+    splits: 5
+    repeats: 3
+    random_state: 20261021
+  inner:
+    type: "StratifiedKFold"
+    splits: 3
+    shuffle: true
+
+evaluation:
+  primary_metric: "f1_macro"
+  metrics:
+    - "f1_macro"
+    - "balanced_accuracy"
+    - "accuracy"
+    - "precision_macro"
+    - "recall_macro"
+
+models:
+  knn_uniform:
+    k: [3, 5, 9, 15]
+
+  knn_distance:
+    k: [3, 5, 9, 15]
+
+  power_wknn:
+    k: [3, 5, 9, 15]
+    p: [1.0, 2.0]
+
+  ald_wknn:
+    k: [3, 5, 9, 15]
+    q: [3, 5, 9]
+    p: [1.0, 2.0]
+    alpha: [0.25, 0.5, 1.0, 2.0]
+    clip_c: [3.0]
+    epsilon: 1.0e-12
+
+parallel:
+  outer_jobs: 1
+  inner_jobs: -1
+
+artifacts:
+  save_predictions: true
+  save_models: true
+  save_fold_metadata: true
+  compression: "gzip"

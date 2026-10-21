@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+
+# Test / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Experiment artifacts (keep directory structure via .gitkeep)
+artifacts/runs/*
+artifacts/models/*
+artifacts/tables/*
+artifacts/figures/*
+artifacts/statistics/*
+artifacts/logs/*
+!artifacts/*/.gitkeep
+
+# Data (large / downloadable)
+data/raw/*
+!data/raw/.gitkeep
+
+# LaTeX build output
+paper/generated/*
+*.aux
+*.log
+*.out
+*.synctex.gz

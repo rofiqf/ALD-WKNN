@@ -1,0 +1,13 @@
+{
+  "dataset": "iris",
+  "source": "UCI",
+  "uci_id": 53,
+  "downloaded_at_utc": "2026-10-21T14:41:19.540513+00:00",
+  "n_samples": 150,
+  "n_features": 4,
+  "n_classes": 3,
+  "target_name": "class",
+  "source_url": "https://archive.ics.uci.edu/dataset/53/iris",
+  "doi": "10.24432/C56C76",
+  "sha256": "2a845a82586dd413237493e80b003f03933b22666d772ca2f5c11ab293c6a5a6"
+}
