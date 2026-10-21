@@ -150,6 +150,25 @@ Could NOT be verified:
   metadata indicates the specific clipped absolute log-density-ratio compatibility penalty of the candidate
   formula — but this remains **unverified, not cleared**.
 
+Update 2026-10-21 (full text obtained and inspected, all equations read):
+- **FORMULA OVERLAP FOUND at the core-structure level.** Han (ICDTE 2025), eq. (5) and eq. (9):
+  g_i = exp(-tau * |log rho~(x) - log rho~_i|) with w_i = (d_i + eps)^{-p(x)} * g_i * u_i * psi(z_i) * 1/n_{y_i}
+  (plus a dual relative-distance rescaling, eq. (10)). The multiplicative pair
+  (distance power weight) x (exponential absolute log-density-ratio gate between query and neighbor)
+  is exactly the ALD-WKNN core. DDW-KNN adds: uncertainty reliability u_i = 1 - normalized entropy,
+  Tukey biweight robustness, class-size normalization, adaptive exponent p(x), ReliefF feature weights.
+  DDW-KNN has no clipping min(c, .); its density proxy is an inverse mean-distance over the
+  classification neighborhood rather than a q-th-neighbor radius.
+- The median normalization rho~ = rho / median cancels inside the log-ratio when one global
+  training median is used, leaving the same |log(rho_x / rho_i)| quantity.
+- **Decision: FORMULA OVERLAP FOUND — ALD-WKNN must be positioned as a minimal
+  replication/extension-style variant of the published density-gate idea (independent density
+  scale q, clipped mismatch, no auxiliary factors), explicitly citing Han 2025.** What remains
+  distinct is the minimalism (two factors vs five), the clipping, the independent q scale, and the
+  reproducible nested-CV multi-dataset evaluation — NOT the core concept.
+- Prior-work concealment check: none. The overlap is disclosed in the paper's framing, related
+  work matrix, and reference list (references.bib entry dynamicdwknn2025 completed with full metadata).
+
 Action: obtain the full text via institutional access and check the DDW-KNN weight equation against
 d^-p * exp(-alpha * min(c, |log(rho_q/rho_i)|)) before any positioning statement is made.
 
