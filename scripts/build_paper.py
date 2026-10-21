@@ -273,7 +273,7 @@ Following the full-text inspection of [@dynamicdwknn2025], the density-compatibi
 
 ## 3.1 Datasets
 
-Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
+Eight public numeric classification datasets from the UCI Machine Learning Repository (Iris, Wine, Seeds, Glass Identification, Sonar, Ionosphere, Breast Cancer Wisconsin Diagnostic, and Banknote Authentication; dataset records and DOIs are listed in the Data availability section) with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
 
 %(TABLE_DATASET_SUMMARY)s
 
@@ -349,20 +349,23 @@ Directions that add complexity only with justification: class-aware density comp
 """
 
 
-REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified; Scopus check pending.
-[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified; Scopus check pending.
-[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified; Scopus check pending.
-[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation; Scopus check pending.
-[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified; Scopus check pending.
-[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; Scopus check pending; novelty relevance: critical.
-[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified; Scopus check pending.
-[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
-[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
-[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
-[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
-[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
-[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
-[14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
+REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified.
+[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified.
+[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified.
+[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation.
+[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified.
+[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; novelty relevance: critical.
+[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified.
+[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; novelty relevance: critical.
+[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified.
+[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified.
+[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2).
+[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified.
+[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified.
+"""
+
+
+DATA_AVAILABILITY = """[14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
 [15] S. Aeberhard and M. Forina, *Wine*, UCI Machine Learning Repository. DOI: 10.24432/C5PC7J. https://archive.ics.uci.edu/dataset/109/wine
 [16] M. Charytanowicz, J. Niewczas, P. Kulczycki, P. A. Kowalski, S. Lukasik, and S. Zak, *Seeds*, UCI Machine Learning Repository. DOI: 10.24432/C5H30K. https://archive.ics.uci.edu/dataset/236/seeds
 [17] *Glass Identification*, UCI Machine Learning Repository. https://archive.ics.uci.edu/dataset/42/glass+identification
@@ -372,10 +375,19 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
 [21] V. Lohweg, *Banknote Authentication*, UCI Machine Learning Repository. DOI: 10.24432/C55P57. https://archive.ics.uci.edu/dataset/267/banknote+authentication"""
 
 
+DATA_AVAILABILITY_SECTION = """
+# Data availability
+
+The following dataset records were used; each was validated after download against the characteristics published by the UCI Machine Learning Repository, and SHA-256 checksums are stored in the project artifacts. These are data-archive records, not literature references.
+
+DATASET_RECORDS
+"""
+
+
 REFERENCES_SECTION = """
 ## Bibliographic verification note
 
-Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. All numbered references [1]-[13] are sourced exclusively from the portals allowed for this coursework: IEEE Xplore [1]-[4], ScienceDirect [5], [7], [8], [12], SpringerLink [6], [9], [10], [13], and the ACM Digital Library [11]. The UCI dataset records are documented separately in the Data availability section; they are data-archive records, not literature references.
 """
 
 
@@ -408,6 +420,13 @@ def build_discussion(ctx: PaperContext) -> str:
         "is applied to the observed pattern without post-hoc re-framing.",
     ]
     return "\n".join(lines)
+
+
+
+def _dataset_records() -> str:
+    return "\n".join(
+        "- " + line.strip() for line in DATA_AVAILABILITY.strip().splitlines() if line.strip()
+    )
 
 
 def main(argv=None) -> int:
@@ -458,6 +477,9 @@ def main(argv=None) -> int:
     if ctx.holm is None:
         paper += "\n(Pairwise Wilcoxon/Holm tables are produced only when the omnibus test justifies post-hoc analysis.)\n"
     paper += REFERENCES_SECTION
+    paper += DATA_AVAILABILITY_SECTION
+
+    paper = paper.replace("DATASET_RECORDS", _dataset_records())
 
     out_path = Path(args.output)
     out_path.parent.mkdir(parents=True, exist_ok=True)

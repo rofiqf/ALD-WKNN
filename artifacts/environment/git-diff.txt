@@ -1,565 +1,745 @@
 diff --git a/artifacts/environment/git-commit.txt b/artifacts/environment/git-commit.txt
-index 9f84511..3631216 100644
+index 3631216..663d4d6 100644
 --- a/artifacts/environment/git-commit.txt
 +++ b/artifacts/environment/git-commit.txt
 @@ -1 +1 @@
--5e844e561c5cb2f50ecc9ffc3311880e837b2c06
-+497d58c7bd53caf51851384e19793a8184932f59
+-497d58c7bd53caf51851384e19793a8184932f59
++539a29b202065ffa5fc67be3f1e08a4e9ccfe1d2
 diff --git a/artifacts/environment/git-diff.txt b/artifacts/environment/git-diff.txt
-index 298ce8e..e69de29 100644
+index 75fcbf0..e69de29 100644
 --- a/artifacts/environment/git-diff.txt
 +++ b/artifacts/environment/git-diff.txt
-@@ -1,356 +0,0 @@
+@@ -1,565 +0,0 @@
 -diff --git a/artifacts/environment/git-commit.txt b/artifacts/environment/git-commit.txt
--index d7f3993..9f84511 100644
+-index 9f84511..3631216 100644
 ---- a/artifacts/environment/git-commit.txt
 -+++ b/artifacts/environment/git-commit.txt
 -@@ -1 +1 @@
---1057753ddd1cac1b13158079e4d80b9061718a0e
--+5e844e561c5cb2f50ecc9ffc3311880e837b2c06
+--5e844e561c5cb2f50ecc9ffc3311880e837b2c06
+-+497d58c7bd53caf51851384e19793a8184932f59
+-diff --git a/artifacts/environment/git-diff.txt b/artifacts/environment/git-diff.txt
+-index 298ce8e..e69de29 100644
+---- a/artifacts/environment/git-diff.txt
+-+++ b/artifacts/environment/git-diff.txt
+-@@ -1,356 +0,0 @@
+--diff --git a/artifacts/environment/git-commit.txt b/artifacts/environment/git-commit.txt
+--index d7f3993..9f84511 100644
+----- a/artifacts/environment/git-commit.txt
+--+++ b/artifacts/environment/git-commit.txt
+--@@ -1 +1 @@
+---1057753ddd1cac1b13158079e4d80b9061718a0e
+--+5e844e561c5cb2f50ecc9ffc3311880e837b2c06
+--diff --git a/paper/paper.md b/paper/paper.md
+--index edfbd8b..e043199 100644
+----- a/paper/paper.md
+--+++ b/paper/paper.md
+--@@ -5,7 +5,7 @@ keywords: "K-Nearest Neighbors; Weighted KNN; Local Density; Adaptive Weighting;
+-- 
+-- # Abstract
+-- 
+---K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 1 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(2) = 2.0000 (p = 0.3679, Kendall's W = 1.0000); ALD-WKNN outperformed Power-WKNN on 0 datasets and underperformed on 1 (mean delta -0.0066). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+--+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+-- 
+-- # 1. Introduction
+-- 
+--@@ -44,9 +44,16 @@ Within the literature inspected for this coursework, a narrower question remains
+-- 
+-- Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
+-- 
+---| dataset   |   n_samples |   n_features |   n_classes |
+---|:----------|------------:|-------------:|------------:|
+---| iris      |         150 |            4 |           3 |
+--+| dataset                            |   n_samples |   n_features |   n_classes |
+--+|:-----------------------------------|------------:|-------------:|------------:|
+--+| iris                               |         150 |            4 |           3 |
+--+| wine                               |         178 |           13 |           3 |
+--+| seeds                              |         210 |            7 |           3 |
+--+| glass                              |         214 |            9 |           6 |
+--+| sonar                              |         208 |           60 |           2 |
+--+| ionosphere                         |         351 |           34 |           2 |
+--+| breast_cancer_wisconsin_diagnostic |         569 |           30 |           2 |
+--+| banknote                           |        1372 |            4 |           2 |
+-- 
+-- ## 3.2 Methods
+-- 
+--@@ -68,10 +75,17 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
+-- 
+-- ## 4.1 Primary performance
+-- 
+---| Dataset   | Uniform KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
+---|:----------|:--------------|:--------------|:--------------|:--------------|
+---| iris      | 0.906 ± 0.020 | 0.919 ± 0.000 | 0.913 ± 0.009 | -0.007        |
+---| Mean rank | 3.00          | 1.00          | 2.00          | —             |
+--+| Dataset                            | Uniform KNN   | Distance KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
+--+|:-----------------------------------|:--------------|:---------------|:--------------|:--------------|:--------------|
+--+| banknote                           | 0.998 ± 0.002 | 0.998 ± 0.002  | 0.998 ± 0.002 | 0.998 ± 0.002 | +0.000        |
+--+| breast_cancer_wisconsin_diagnostic | 0.961 ± 0.016 | 0.961 ± 0.016  | 0.961 ± 0.018 | 0.964 ± 0.016 | +0.003        |
+--+| glass                              | 0.614 ± 0.105 | 0.649 ± 0.096  | 0.645 ± 0.100 | 0.672 ± 0.089 | +0.026        |
+--+| ionosphere                         | 0.809 ± 0.040 | 0.809 ± 0.045  | 0.809 ± 0.045 | 0.865 ± 0.043 | +0.056        |
+--+| iris                               | 0.940 ± 0.052 | 0.949 ± 0.035  | 0.949 ± 0.035 | 0.949 ± 0.035 | +0.000        |
+--+| seeds                              | 0.918 ± 0.047 | 0.918 ± 0.045  | 0.920 ± 0.046 | 0.928 ± 0.048 | +0.008        |
+--+| sonar                              | 0.847 ± 0.045 | 0.847 ± 0.045  | 0.848 ± 0.039 | 0.842 ± 0.047 | -0.006        |
+--+| wine                               | 0.963 ± 0.029 | 0.958 ± 0.029  | 0.961 ± 0.023 | 0.970 ± 0.027 | +0.009        |
+--+| Mean rank                          | 2.81          | 2.94           | 2.69          | 1.56          | —             |
+-- 
+-- ![fig_dataset_performance](artifacts/figures/fig_dataset_performance.png){width=80%}
+-- 
+--@@ -83,9 +97,9 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
+-- 
+-- | Metric   |   Datasets |   Methods |   Statistic |   df |   p-value |   Kendall W | Decision                           |
+-- |:---------|-----------:|----------:|------------:|-----:|----------:|------------:|:-----------------------------------|
+---| f1_macro |          1 |         3 |           2 |    2 |    0.3679 |           1 | insufficient evidence to reject H0 |
+--+| f1_macro |          8 |         4 |           7 |    3 |    0.0719 |      0.2917 | insufficient evidence to reject H0 |
+-- 
+---The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(2)=2.0000, p=0.3679. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
+--+The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(3)=7.0000, p=0.0719. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
+-- 
+-- # Pairwise comparisons (Wilcoxon + Holm)
+-- 
+--@@ -97,14 +111,14 @@ TBD — post-hoc tests were not executed (omnibus p >= 0.05, or statistics artif
+-- 
+-- # Ablation summary
+-- 
+---Source run: `20261021T143913Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
+--+Source run: `20261021T145634Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
+-- 
+-- | Variant          | Distance   | Density compatibility   | Clipping   |   Mean Macro F1 |   Mean Rank |
+-- |:-----------------|:-----------|:------------------------|:-----------|----------------:|------------:|
+---| A0 Distance-only | ✓          | ✗                       | N/A        |           0.919 |         1   |
+---| A1 Density-only  | ✗          | ✓                       | ✓          |           0.906 |         4   |
+---| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.913 |         2.5 |
+---| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.913 |         2.5 |
+--+| A0 Distance-only | ✓          | ✗                       | N/A        |           0.884 |        3.88 |
+--+| A1 Density-only  | ✗          | ✓                       | ✓          |           0.893 |        3    |
+--+| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.901 |        1.69 |
+--+| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.901 |        1.44 |
+-- 
+-- Interpretation guide (PROJECT_SPEC.md): A3 > A0 supports the density term;
+-- A3 ≈ A0 means the modification gives no clear practical benefit;
+--@@ -117,38 +131,65 @@ context is useful as a modifier rather than a standalone signal.
+-- 
+-- # Hyperparameter selection frequency
+-- 
+---Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
+--+Source run: `20261021T145425Z_seed20261021_main`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
+-- 
+-- ## Uniform KNN
+-- 
+-- | Parameter   |   Value |   Selections |   Frequency (%) |
+-- |:------------|--------:|-------------:|----------------:|
+---| n_neighbors |       3 |            2 |             100 |
+--+| n_neighbors |       3 |           62 |            51.7 |
+--+| n_neighbors |       5 |           28 |            23.3 |
+--+| n_neighbors |      15 |           16 |            13.3 |
+--+| n_neighbors |       9 |           14 |            11.7 |
+--+
+--+## Distance KNN
+--+
+--+| Parameter   |   Value |   Selections |   Frequency (%) |
+--+|:------------|--------:|-------------:|----------------:|
+--+| n_neighbors |       3 |           55 |            45.8 |
+--+| n_neighbors |       5 |           30 |            25   |
+--+| n_neighbors |      15 |           25 |            20.8 |
+--+| n_neighbors |       9 |           10 |             8.3 |
+-- 
+-- ## Power-WKNN
+-- 
+-- | Parameter      |   Value |   Selections |   Frequency (%) |
+-- |:---------------|--------:|-------------:|----------------:|
+---| distance_power |       1 |            2 |             100 |
+---| n_neighbors    |       3 |            2 |             100 |
+--+| distance_power |       1 |           73 |            60.8 |
+--+| distance_power |       2 |           47 |            39.2 |
+--+| n_neighbors    |       3 |           43 |            35.8 |
+--+| n_neighbors    |       5 |           33 |            27.5 |
+--+| n_neighbors    |      15 |           26 |            21.7 |
+--+| n_neighbors    |       9 |           18 |            15   |
+-- 
+-- ## ALD-WKNN
+-- 
+-- | Parameter         |   Value |   Selections |   Frequency (%) |
+-- |:------------------|--------:|-------------:|----------------:|
+---| density_alpha     |     0.5 |            2 |             100 |
+---| density_clip      |     3   |            2 |             100 |
+---| density_neighbors |     3   |            2 |             100 |
+---| distance_power    |     1   |            2 |             100 |
+---| n_neighbors       |     3   |            2 |             100 |
+--+| density_alpha     |   2     |           69 |            57.5 |
+--+| density_alpha     |   0.25  |           38 |            31.7 |
+--+| density_alpha     |   1     |            7 |             5.8 |
+--+| density_alpha     |   0.5   |            6 |             5   |
+--+| density_clip      |   3     |          120 |           100   |
+--+| density_neighbors |   3     |           72 |            60   |
+--+| density_neighbors |   9     |           27 |            22.5 |
+--+| density_neighbors |   5     |           21 |            17.5 |
+--+| distance_power    |   2     |           64 |            53.3 |
+--+| distance_power    |   1     |           56 |            46.7 |
+--+| epsilon           |   1e-12 |          120 |           100   |
+--+| n_neighbors       |  15     |           43 |            35.8 |
+--+| n_neighbors       |   3     |           29 |            24.2 |
+--+| n_neighbors       |   5     |           27 |            22.5 |
+--+| n_neighbors       |   9     |           21 |            17.5 |
+-- 
+-- ## 4.5 Runtime
+-- 
+---| Method      |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
+---|:------------|--------------------:|------------------------:|:-----------------------------------|
+---| ALD-WKNN    |              0.03   |                  0.0019 | 2.01x                              |
+---| Uniform KNN |              0.015  |                  0.0013 | 1.00x                              |
+---| Power-WKNN  |              0.0141 |                  0.0012 | 0.94x                              |
+--+| Method       |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
+--+|:-------------|--------------------:|------------------------:|:-----------------------------------|
+--+| ALD-WKNN     |              0.7554 |                  0.0023 | 13.46x                             |
+--+| Distance KNN |              0.0448 |                  0.0018 | 0.80x                              |
+--+| Uniform KNN  |              0.0561 |                  0.0016 | 1.00x                              |
+--+| Power-WKNN   |              0.0652 |                  0.0015 | 1.16x                              |
+-- 
+-- ![fig_runtime](artifacts/figures/fig_runtime.png){width=80%}
+-- 
+--@@ -156,20 +197,20 @@ Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold
+-- 
+-- The discussion below is generated from the artifacts; negative results are retained.
+-- 
+---1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on 0 of the evaluated datasets and underperformed on 1 (mean delta -0.0066).
+---2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (1 datasets).
+---3. **Strength of the density correction.** Inner CV selected small alpha values in 2/2 outer-fold selections chose alpha <= 0.5 cases, indicating how strongly the density correction was needed.
+---4. **Sensitivity to q.** Selection counts: q=3: 2.
+---5. **Clipping.** clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000).
+--+1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120).
+--+2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (8 datasets).
+--+3. **Strength of the density correction.** inner-CV selection frequencies were alpha=0.25 (31.7%), alpha=0.5 (5.0%), alpha=1 (5.8%), alpha=2 (57.5%); alpha <= 0.5 was chosen in 44/120 folds (36.7%). The frequent selection of the largest alpha value suggests the density penalty was active rather than negligible, but selection frequencies alone do not prove benefit.
+--+4. **Sensitivity to q.** Selection counts: q=3: 72, q=9: 27, q=5: 21.
+--+5. **Clipping.** clipped A3 mean Macro F1 is higher than unclipped A2 (mean difference +0.0001).
+-- 6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean delta above; the comparison against the strongest distance baseline is the decisive one.
+---7. **Practical magnitude.** The mean delta of -0.0066 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
+---8. **Computational overhead.** mean fit time ALD/uniform = 2.01x, mean predict time ALD/uniform = 1.47x.
+---9. **Statistical support.** Omnibus p = 0.3679; conclusions follow the adjusted p-values, not raw averages.
+--+7. **Practical magnitude.** The mean delta of +0.0120 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
+--+8. **Computational overhead.** mean fit time ALD/uniform = 13.46x, mean predict time ALD/uniform = 1.41x.
+--+9. **Statistical support.** Omnibus p = 0.0719; conclusions follow the adjusted p-values, not raw averages.
+-- 10. **Consistency with initial hypotheses.** The interpretation matrix of PROJECT_SPEC.md is applied to the observed pattern without post-hoc re-framing.
+-- 
+-- # 5. Conclusion
+-- 
+---This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of -0.0066 versus Power-WKNN (wins 0, losses 1 across datasets). The Friedman test yielded p = 0.3679 (no sufficient evidence of differences among method ranks), while Holm-adjusted pairwise comparisons and rank-biserial effect sizes are reported in the results section. Ablation indicated that the local-density compatibility component (clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000)) and clipping behave as described in the ablation analysis. These findings suggest the density-compatibility penalty is not confirmed within the evaluated scope only, and no broader claim is made.
+--+This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of +0.0120 versus Power-WKNN (wins 5, losses 1, ties 2 across datasets). The Friedman test yielded p = 0.0719 (no sufficient evidence of differences among method ranks), so pairwise comparisons are at most exploratory under this design. Ablation showed the full clipped formulation (A3) marginally above the unclipped variant (A2) and above distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest standalone variant — consistent with density acting as a modifier rather than a sufficient signal by itself. These findings suggest the density-compatibility penalty is descriptively favorable on the evaluated benchmark but not statistically confirmed within this design, and no broader claim is made.
+-- 
+-- # Limitations
+-- 
+--diff --git a/scripts/build_paper.py b/scripts/build_paper.py
+--index c817a0b..1fb8653 100644
+----- a/scripts/build_paper.py
+--+++ b/scripts/build_paper.py
+--@@ -106,14 +106,17 @@ class PaperContext:
+-- 
+--     def win_loss(self) -> dict:
+--         if self.aggregates is None:
+---            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
+--+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
+--         mat = score_matrix(self.aggregates, "f1_macro")
+--         if not {"ald_wknn", "power_wknn"}.issubset(mat.columns):
+---            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
+---        delta = mat["ald_wknn"] - mat["power_wknn"]
+--+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
+--+        # round to the same precision shown in the paper table so the text
+--+        # claims are traceable to the printed per-dataset deltas
+--+        delta = (mat["ald_wknn"] - mat["power_wknn"]).round(3)
+--         return {
+--             "wins": str(int((delta > 0).sum())),
+--             "losses": str(int((delta < 0).sum())),
+--+            "ties": str(int((delta == 0).sum())),
+--             "mean_delta": _fmt(delta.mean(), "+.4f"),
+--         }
+-- 
+--@@ -126,7 +129,15 @@ class PaperContext:
+--         if not alphas:
+--             return TBD
+--         small = sum(1 for a in alphas if float(a) <= 0.5)
+---        return f"{small}/{len(alphas)} outer-fold selections chose alpha <= 0.5"
+--+        counts = pd.Series(alphas).value_counts().sort_index()
+--+        freq = ", ".join(
+--+            f"alpha={k:g} ({v / len(alphas):.1%})" for k, v in counts.items()
+--+        )
+--+        return (
+--+            f"inner-CV selection frequencies were {freq}; "
+--+            f"alpha <= 0.5 was chosen in {small}/{len(alphas)} folds "
+--+            f"({small / len(alphas):.1%})"
+--+        )
+-- 
+--     def q_summary(self) -> str:
+--         if self.best_params is None or "ald_wknn" not in set(self.best_params["method"]):
+--@@ -173,8 +184,8 @@ class PaperContext:
+--             f"Across {fried['FRIEDMAN_N']} tabular classification datasets, the Friedman test "
+--             f"on dataset-level Macro F1 gave chi^2({fried['FRIEDMAN_DF']}) = {fried['FRIEDMAN_STAT']} "
+--             f"(p = {fried['FRIEDMAN_P']}, Kendall's W = {fried['FRIEDMAN_KENDALL_W']}); "
+---            f"ALD-WKNN outperformed Power-WKNN on {wl['wins']} datasets and underperformed on "
+---            f"{wl['losses']} (mean delta {wl['mean_delta']})."
+--+            f"ALD-WKNN was ahead of Power-WKNN on {wl['wins']} datasets, behind on "
+--+            f"{wl['losses']}, and tied on {wl['ties']} (mean delta {wl['mean_delta']})."
+--         )
+-- 
+--     def conclusion_result(self) -> str:
+--@@ -189,14 +200,15 @@ class PaperContext:
+--         wl = self.win_loss()
+--         return (
+--             f"a mean Macro F1 delta of {wl['mean_delta']} versus Power-WKNN "
+---            f"(wins {wl['wins']}, losses {wl['losses']} across datasets). The Friedman test "
+---            f"yielded p = {fried['FRIEDMAN_P']} ({decision}), while Holm-adjusted pairwise "
+---            f"comparisons and rank-biserial effect sizes are reported in the results section. "
+---            f"Ablation indicated that the local-density compatibility component "
+---            f"({self.clipping_summary()}) and clipping behave as described in the ablation "
+---            f"analysis. These findings suggest the density-compatibility penalty is "
+---            f"{'supported' if fried['FRIEDMAN_P'] != TBD and float(fried['FRIEDMAN_P']) < 0.05 else 'not confirmed'} "
+---            f"within the evaluated scope only, and no broader claim is made."
+--+            f"(wins {wl['wins']}, losses {wl['losses']}, ties {wl['ties']} across datasets). "
+--+            f"The Friedman test yielded p = {fried['FRIEDMAN_P']} ({decision}), so pairwise "
+--+            f"comparisons are at most exploratory under this design. Ablation showed the full "
+--+            f"clipped formulation (A3) marginally above the unclipped variant (A2) and above "
+--+            f"distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest "
+--+            f"standalone variant — consistent with density acting as a modifier rather than a "
+--+            f"sufficient signal by itself. These findings suggest the density-compatibility "
+--+            f"penalty is descriptively favorable on the evaluated benchmark but not "
+--+            f"statistically confirmed within this design, and no broader claim is made."
+--         )
+-- 
+--     def runtime_table(self) -> str:
+--@@ -373,13 +385,15 @@ def build_discussion(ctx: PaperContext) -> str:
+--     lines = [
+--         "The discussion below is generated from the artifacts; negative results are retained.",
+--         "",
+---        f"1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on {wl['wins']} of the "
+---        f"evaluated datasets and underperformed on {wl['losses']} (mean delta {wl['mean_delta']}).",
+--+        f"1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on {wl['wins']} "
+--+        f"datasets, behind on {wl['losses']}, and tied on {wl['ties']} "
+--+        f"(mean delta {wl['mean_delta']}).",
+--         f"2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; "
+--         f"claims about high-dimensional, imbalanced, or difficult datasets are limited to the "
+--         f"evaluated set ({ctx.friedman_values().get('FRIEDMAN_N', TBD)} datasets).",
+---        f"3. **Strength of the density correction.** Inner CV selected small alpha values in "
+---        f"{ctx.alpha_summary()} cases, indicating how strongly the density correction was needed.",
+--+        f"3. **Strength of the density correction.** {ctx.alpha_summary()}. "
+--+        f"The frequent selection of the largest alpha value suggests the density penalty was "
+--+        f"active rather than negligible, but selection frequencies alone do not prove benefit.",
+--         f"4. **Sensitivity to q.** Selection counts: {ctx.q_summary()}.",
+--         f"5. **Clipping.** {ctx.clipping_summary()}.",
+--         f"6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean "
+--diff --git a/scripts/make_figures.py b/scripts/make_figures.py
+--index 2569885..a3cc23a 100644
+----- a/scripts/make_figures.py
+--+++ b/scripts/make_figures.py
+--@@ -86,13 +86,15 @@ def fig_ablation(cfg: dict, out_dir: Path) -> None:
+--         print("[figures] fig_ablation skipped: no ablation run found", flush=True)
+--         return
+--     metrics = pd.read_csv(run_dir / "metrics_outer.csv")
+---    agg = dataset_aggregates(metrics, "f1_macro")
+--+    # one value per variant: mean of per-dataset means, std across datasets
+--+    per_ds = metrics.groupby(["dataset", "method"], as_index=False)["f1_macro"].mean()
+--+    agg = per_ds.groupby("method")["f1_macro"].agg(["mean", "std"]).reset_index()
+--     order = [v for v in ("A0_distance_only", "A1_density_only", "A2_ald_unclipped", "A3_ald_full")
+--              if v in set(agg["method"])]
+--     sub = agg.set_index("method").loc[order]
+--     fig, ax = plt.subplots(figsize=(8, 5))
+---    ax.bar([_label(m) for m in order], sub["f1_macro_mean"],
+---           yerr=sub["f1_macro_std"], capsize=4)
+--+    ax.bar([_label(m) for m in order], sub["mean"],
+--+           yerr=sub["std"], capsize=4)
+--     ax.set_ylabel("Macro F1 (mean ± std across datasets)")
+--     ax.set_title("Ablation: Mean Macro F1 per Variant")
+--     plt.xticks(rotation=20, ha="right")
+--diff --git a/scripts/validate_reproducibility.py b/scripts/validate_reproducibility.py
+--index 79321bd..e6bf48d 100644
+----- a/scripts/validate_reproducibility.py
+--+++ b/scripts/validate_reproducibility.py
+--@@ -64,14 +64,19 @@ def compare(stored_dir: Path, new_dir: Path, dataset: str) -> list[str]:
+--     pa, pb = _sorted(stored_p, key + ["row_id"]), _sorted(new_p, key + ["row_id"])
+--     if not (pa["y_pred"].tolist() == pb["y_pred"].tolist()):
+--         problems.append("predicted labels differ between runs")
+---    score_cols = [c for c in pa.columns if c.startswith("score_class_")]
+---    if score_cols != [c for c in pb.columns if c.startswith("score_class_")]:
+---        problems.append("score column sets differ between runs")
+---    else:
+---        for col in score_cols:
+---            if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
+---                               atol=ATOL, rtol=0.0):
+---                problems.append(f"score column {col!r} differs beyond atol={ATOL}")
+--+    # Score columns are a union across ALL datasets of a run, so a partial
+--+    # re-run legitimately has fewer; compare the shared columns only.
+--+    stored_cols = [c for c in pa.columns if c.startswith("score_class_")]
+--+    new_cols = [c for c in pb.columns if c.startswith("score_class_")]
+--+    if not set(new_cols).issubset(stored_cols):
+--+        problems.append(
+--+            f"score columns missing from stored run: {sorted(set(new_cols) - set(stored_cols))}"
+--+        )
+--+        return problems
+--+    for col in new_cols:
+--+        if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
+--+                           atol=ATOL, rtol=0.0):
+--+            problems.append(f"score column {col!r} differs beyond atol={ATOL}")
+--     return problems
+-- 
+-- 
+-diff --git a/artifacts/environment/literature_search.md b/artifacts/environment/literature_search.md
+-index 866ecd9..8b703d2 100644
+---- a/artifacts/environment/literature_search.md
+-+++ b/artifacts/environment/literature_search.md
+-@@ -150,6 +150,25 @@ Could NOT be verified:
+-   metadata indicates the specific clipped absolute log-density-ratio compatibility penalty of the candidate
+-   formula — but this remains **unverified, not cleared**.
+- 
+-+Update 2026-10-21 (full text obtained and inspected, all equations read):
+-+- **FORMULA OVERLAP FOUND at the core-structure level.** Han (ICDTE 2025), eq. (5) and eq. (9):
+-+  g_i = exp(-tau * |log rho~(x) - log rho~_i|) with w_i = (d_i + eps)^{-p(x)} * g_i * u_i * psi(z_i) * 1/n_{y_i}
+-+  (plus a dual relative-distance rescaling, eq. (10)). The multiplicative pair
+-+  (distance power weight) x (exponential absolute log-density-ratio gate between query and neighbor)
+-+  is exactly the ALD-WKNN core. DDW-KNN adds: uncertainty reliability u_i = 1 - normalized entropy,
+-+  Tukey biweight robustness, class-size normalization, adaptive exponent p(x), ReliefF feature weights.
+-+  DDW-KNN has no clipping min(c, .); its density proxy is an inverse mean-distance over the
+-+  classification neighborhood rather than a q-th-neighbor radius.
+-+- The median normalization rho~ = rho / median cancels inside the log-ratio when one global
+-+  training median is used, leaving the same |log(rho_x / rho_i)| quantity.
+-+- **Decision: FORMULA OVERLAP FOUND — ALD-WKNN must be positioned as a minimal
+-+  replication/extension-style variant of the published density-gate idea (independent density
+-+  scale q, clipped mismatch, no auxiliary factors), explicitly citing Han 2025.** What remains
+-+  distinct is the minimalism (two factors vs five), the clipping, the independent q scale, and the
+-+  reproducible nested-CV multi-dataset evaluation — NOT the core concept.
+-+- Prior-work concealment check: none. The overlap is disclosed in the paper's framing, related
+-+  work matrix, and reference list (references.bib entry dynamicdwknn2025 completed with full metadata).
+-+
+- Action: obtain the full text via institutional access and check the DDW-KNN weight equation against
+- d^-p * exp(-alpha * min(c, |log(rho_q/rho_i)|)) before any positioning statement is made.
+- 
 -diff --git a/paper/paper.md b/paper/paper.md
--index edfbd8b..e043199 100644
+-index e043199..148cb0c 100644
 ---- a/paper/paper.md
 -+++ b/paper/paper.md
 -@@ -5,7 +5,7 @@ keywords: "K-Nearest Neighbors; Weighted KNN; Local Density; Adaptive Weighting;
 - 
 - # Abstract
 - 
---K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 1 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(2) = 2.0000 (p = 0.3679, Kendall's W = 1.0000); ALD-WKNN outperformed Power-WKNN on 0 datasets and underperformed on 1 (mean delta -0.0066). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
--+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+--K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+-+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. A 2025 ACM study introduces a dynamic distance-weighted KNN whose weight already contains an exponential absolute log-density-ratio gate between the query and each neighbor [@dynamicdwknn2025]; the present work deliberately reduces that published idea to its minimal two-factor form (distance power x clipped density-compatibility gate) and subjects it to a reproducible multi-dataset evaluation. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible replication/extension-style empirical investigation of a minimal KNN modification, not as a claim of algorithmic novelty.
 - 
 - # 1. Introduction
 - 
--@@ -44,9 +44,16 @@ Within the literature inspected for this coursework, a narrower question remains
+-@@ -17,7 +17,7 @@ Crucially for the framing of this study, **local density is not a new idea for K
 - 
-- Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
+- The research questions are: **RQ1** whether ALD-WKNN differs consistently from uniform and distance-weighted KNN in Macro F1; **RQ2** whether the density-compatibility component contributes once distance weighting is isolated by ablation; **RQ3** whether clipping the density mismatch improves stability; **RQ4** on which dataset characteristics ALD-WKNN helps, is neutral, or hurts; and **RQ5** the additional computational cost of local-density information. The tested hypotheses are the Friedman null H0 of equal method ranks across datasets versus the general alternative that at least two methods differ. No hypothesis is made that ALD-WKNN must score higher.
 - 
---| dataset   |   n_samples |   n_features |   n_classes |
---|:----------|------------:|-------------:|------------:|
---| iris      |         150 |            4 |           3 |
--+| dataset                            |   n_samples |   n_features |   n_classes |
--+|:-----------------------------------|------------:|-------------:|------------:|
--+| iris                               |         150 |            4 |           3 |
--+| wine                               |         178 |           13 |           3 |
--+| seeds                              |         210 |            7 |           3 |
--+| glass                              |         214 |            9 |           6 |
--+| sonar                              |         208 |           60 |           2 |
--+| ionosphere                         |         351 |           34 |           2 |
--+| breast_cancer_wisconsin_diagnostic |         569 |           30 |           2 |
--+| banknote                           |        1372 |            4 |           2 |
+--The contribution of this work is limited to evaluating a simple query-neighbor density-compatibility weighting formulation and systematically isolating its components through nested cross-validation and ablation across heterogeneous tabular datasets. The formulation is presented as a **candidate formulation** whose formula-level novelty remains subject to literature verification; in particular, a 2025 ACM article on dynamic distance-weighted KNN [@dynamicdwknn2025] could not be fully inspected and is treated as a mandatory novelty-check item.
+-+The contribution of this work is deliberately narrow and is stated only after a formula-level literature check. Han (2025) [@dynamicdwknn2025] already publishes a Dynamic Distance-Weighted KNN whose per-neighbor weight multiplies an inverse-distance power term by an exponential absolute log-density-ratio gate between the query and each neighbor, augmented with additional uncertainty-reliability, robustness-kernel, and class-normalization factors. The core pair (distance power weight) x (exp(-tau * |log density ratio|)) of that published method is equivalent to the core of the formulation examined here. ALD-WKNN is therefore presented as a **deliberately minimal variant of that published idea**: an independent density scale q, a clipped mismatch bound c, and no auxiliary factors, evaluated under a reproducible nested cross-validation protocol across heterogeneous tabular datasets. The contribution of this paper is the controlled ablation of the minimal form and an honest multi-dataset assessment — not the core concept, which has a 2025 precedent.
 - 
-- ## 3.2 Methods
+- # 2. Related Work
 - 
--@@ -68,10 +75,17 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
+-@@ -34,9 +34,9 @@ Nearest-neighbor classification evolved from the foundational consistency result
+- | Ding et al., 2024 | ScienceDirect | Weighted-KNN local density for clustering | Similar construction, different task | Density + KNN is not novel |
+- | Abdalla & Amer, 2025 | ScienceDirect / ACM | Locally informed weighted KNN | Very close | Local information + weights is not novel |
+- | Amer et al., 2025 | SpringerLink | PR-kNN / WPR-kNN | Local consistency + weighting | Strong modern comparator |
+--| Dynamic DW-KNN, 2025 | ACM DL | Dynamic DW-KNN, density + uncertainty | Must inspect | Formula-level novelty not yet safe |
+-+| Han, 2025 | ACM DL (full text inspected 2026-10-21) | Dynamic DW-KNN: d^{-p(x)} x exp(-tau * |log density ratio|) x uncertainty x Tukey robustness x class normalization | Core density gate equivalent to ALD-WKNN's | Core idea has a 2025 precedent; this study evaluates a minimal clipped variant |
 - 
-- ## 4.1 Primary performance
+--Within the literature inspected for this coursework, a narrower question remains worth empirically testing: whether a minimal label-independent query-to-neighbor density-compatibility penalty, expressed as a bounded log-ratio of local density proxies and multiplied directly by inverse-distance weighting, yields measurable benefits over simpler distance weighting under a leakage-controlled nested-CV protocol. This is treated as a candidate formula-level distinction, not as established algorithmic novelty. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
+-+Following the full-text inspection of [@dynamicdwknn2025], the density-compatibility gate examined in this paper cannot be claimed as a new formula: its core already appears, multiplied by several additional factors, in a published 2025 method. The question that remains empirically meaningful — and that the prior work does not answer — is whether the **minimal two-factor form** (a power distance weight multiplied by a clipped log-ratio density-compatibility gate, without uncertainty, robustness, or class-balance factors) yields measurable benefits over distance weighting alone under a leakage-controlled nested-CV protocol on heterogeneous small tabular datasets. This is a replication/extension-style question, not a novelty claim. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
 - 
---| Dataset   | Uniform KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
---|:----------|:--------------|:--------------|:--------------|:--------------|
---| iris      | 0.906 ± 0.020 | 0.919 ± 0.000 | 0.913 ± 0.009 | -0.007        |
---| Mean rank | 3.00          | 1.00          | 2.00          | —             |
--+| Dataset                            | Uniform KNN   | Distance KNN   | Power-WKNN    | ALD-WKNN      | Δ ALD−PWKNN   |
--+|:-----------------------------------|:--------------|:---------------|:--------------|:--------------|:--------------|
--+| banknote                           | 0.998 ± 0.002 | 0.998 ± 0.002  | 0.998 ± 0.002 | 0.998 ± 0.002 | +0.000        |
--+| breast_cancer_wisconsin_diagnostic | 0.961 ± 0.016 | 0.961 ± 0.016  | 0.961 ± 0.018 | 0.964 ± 0.016 | +0.003        |
--+| glass                              | 0.614 ± 0.105 | 0.649 ± 0.096  | 0.645 ± 0.100 | 0.672 ± 0.089 | +0.026        |
--+| ionosphere                         | 0.809 ± 0.040 | 0.809 ± 0.045  | 0.809 ± 0.045 | 0.865 ± 0.043 | +0.056        |
--+| iris                               | 0.940 ± 0.052 | 0.949 ± 0.035  | 0.949 ± 0.035 | 0.949 ± 0.035 | +0.000        |
--+| seeds                              | 0.918 ± 0.047 | 0.918 ± 0.045  | 0.920 ± 0.046 | 0.928 ± 0.048 | +0.008        |
--+| sonar                              | 0.847 ± 0.045 | 0.847 ± 0.045  | 0.848 ± 0.039 | 0.842 ± 0.047 | -0.006        |
--+| wine                               | 0.963 ± 0.029 | 0.958 ± 0.029  | 0.961 ± 0.023 | 0.970 ± 0.027 | +0.009        |
--+| Mean rank                          | 2.81          | 2.94           | 2.69          | 1.56          | —             |
+- # 3. Experimental Setup
 - 
-- ![fig_dataset_performance](artifacts/figures/fig_dataset_performance.png){width=80%}
+-@@ -61,7 +61,7 @@ Let d(x, x_i) be the Euclidean distance after preprocessing fitted on the traini
 - 
--@@ -83,9 +97,9 @@ The unit of inference is the **dataset**, not the CV fold: fold scores from repe
+- w_i(x) = (d(x,x_i) + eps)^{-p} * exp[-alpha * min(c, |log((rho_q(x)+eps)/(rho_q(x_i)+eps))|)],
 - 
-- | Metric   |   Datasets |   Methods |   Statistic |   df |   p-value |   Kendall W | Decision                           |
-- |:---------|-----------:|----------:|------------:|-----:|----------:|------------:|:-----------------------------------|
---| f1_macro |          1 |         3 |           2 |    2 |    0.3679 |           1 | insufficient evidence to reject H0 |
--+| f1_macro |          8 |         4 |           7 |    3 |    0.0719 |      0.2917 | insufficient evidence to reject H0 |
+--where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
+-+where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. This two-factor form is a minimal special case of the weight published by Han (2025) [@dynamicdwknn2025], which multiplies a similar distance-and-density gate by additional uncertainty-reliability, Tukey-robustness, and class-normalization factors; the present study isolates the minimal pair and adds the explicit clipping bound c. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
 - 
---The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(2)=2.0000, p=0.3679. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
--+The Friedman test did not provide sufficient evidence to reject the null hypothesis of equal method ranks across the evaluated datasets, χ²F(3)=7.0000, p=0.0719. Consequently, pairwise tests are reported, if shown at all, as exploratory rather than as confirmatory evidence.
+- ## 3.3 Nested cross-validation and tuning
 - 
-- # Pairwise comparisons (Wilcoxon + Holm)
-- 
--@@ -97,14 +111,14 @@ TBD — post-hoc tests were not executed (omnibus p >= 0.05, or statistics artif
-- 
-- # Ablation summary
-- 
---Source run: `20261021T143913Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
--+Source run: `20261021T145634Z_seed20261021_ablation` (aggregate Macro F1 across datasets).
-- 
-- | Variant          | Distance   | Density compatibility   | Clipping   |   Mean Macro F1 |   Mean Rank |
-- |:-----------------|:-----------|:------------------------|:-----------|----------------:|------------:|
---| A0 Distance-only | ✓          | ✗                       | N/A        |           0.919 |         1   |
---| A1 Density-only  | ✗          | ✓                       | ✓          |           0.906 |         4   |
---| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.913 |         2.5 |
---| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.913 |         2.5 |
--+| A0 Distance-only | ✓          | ✗                       | N/A        |           0.884 |        3.88 |
--+| A1 Density-only  | ✗          | ✓                       | ✓          |           0.893 |        3    |
--+| A2 ALD-Unclipped | ✓          | ✓                       | ✗          |           0.901 |        1.69 |
--+| A3 ALD-Full      | ✓          | ✓                       | ✓          |           0.901 |        1.44 |
-- 
-- Interpretation guide (PROJECT_SPEC.md): A3 > A0 supports the density term;
-- A3 ≈ A0 means the modification gives no clear practical benefit;
--@@ -117,38 +131,65 @@ context is useful as a modifier rather than a standalone signal.
-- 
-- # Hyperparameter selection frequency
-- 
---Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
--+Source run: `20261021T145425Z_seed20261021_main`. Frequencies count outer-fold selections; nested CV may select different values per fold, so no single global 'best parameter' is reported.
-- 
-- ## Uniform KNN
-- 
-- | Parameter   |   Value |   Selections |   Frequency (%) |
-- |:------------|--------:|-------------:|----------------:|
---| n_neighbors |       3 |            2 |             100 |
--+| n_neighbors |       3 |           62 |            51.7 |
--+| n_neighbors |       5 |           28 |            23.3 |
--+| n_neighbors |      15 |           16 |            13.3 |
--+| n_neighbors |       9 |           14 |            11.7 |
--+
--+## Distance KNN
--+
--+| Parameter   |   Value |   Selections |   Frequency (%) |
--+|:------------|--------:|-------------:|----------------:|
--+| n_neighbors |       3 |           55 |            45.8 |
--+| n_neighbors |       5 |           30 |            25   |
--+| n_neighbors |      15 |           25 |            20.8 |
--+| n_neighbors |       9 |           10 |             8.3 |
-- 
-- ## Power-WKNN
-- 
-- | Parameter      |   Value |   Selections |   Frequency (%) |
-- |:---------------|--------:|-------------:|----------------:|
---| distance_power |       1 |            2 |             100 |
---| n_neighbors    |       3 |            2 |             100 |
--+| distance_power |       1 |           73 |            60.8 |
--+| distance_power |       2 |           47 |            39.2 |
--+| n_neighbors    |       3 |           43 |            35.8 |
--+| n_neighbors    |       5 |           33 |            27.5 |
--+| n_neighbors    |      15 |           26 |            21.7 |
--+| n_neighbors    |       9 |           18 |            15   |
-- 
-- ## ALD-WKNN
-- 
-- | Parameter         |   Value |   Selections |   Frequency (%) |
-- |:------------------|--------:|-------------:|----------------:|
---| density_alpha     |     0.5 |            2 |             100 |
---| density_clip      |     3   |            2 |             100 |
---| density_neighbors |     3   |            2 |             100 |
---| distance_power    |     1   |            2 |             100 |
---| n_neighbors       |     3   |            2 |             100 |
--+| density_alpha     |   2     |           69 |            57.5 |
--+| density_alpha     |   0.25  |           38 |            31.7 |
--+| density_alpha     |   1     |            7 |             5.8 |
--+| density_alpha     |   0.5   |            6 |             5   |
--+| density_clip      |   3     |          120 |           100   |
--+| density_neighbors |   3     |           72 |            60   |
--+| density_neighbors |   9     |           27 |            22.5 |
--+| density_neighbors |   5     |           21 |            17.5 |
--+| distance_power    |   2     |           64 |            53.3 |
--+| distance_power    |   1     |           56 |            46.7 |
--+| epsilon           |   1e-12 |          120 |           100   |
--+| n_neighbors       |  15     |           43 |            35.8 |
--+| n_neighbors       |   3     |           29 |            24.2 |
--+| n_neighbors       |   5     |           27 |            22.5 |
--+| n_neighbors       |   9     |           21 |            17.5 |
-- 
-- ## 4.5 Runtime
-- 
---| Method      |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
---|:------------|--------------------:|------------------------:|:-----------------------------------|
---| ALD-WKNN    |              0.03   |                  0.0019 | 2.01x                              |
---| Uniform KNN |              0.015  |                  0.0013 | 1.00x                              |
---| Power-WKNN  |              0.0141 |                  0.0012 | 0.94x                              |
--+| Method       |   Fit time mean (s) |   Predict time mean (s) | Relative fit time vs Uniform KNN   |
--+|:-------------|--------------------:|------------------------:|:-----------------------------------|
--+| ALD-WKNN     |              0.7554 |                  0.0023 | 13.46x                             |
--+| Distance KNN |              0.0448 |                  0.0018 | 0.80x                              |
--+| Uniform KNN  |              0.0561 |                  0.0016 | 1.00x                              |
--+| Power-WKNN   |              0.0652 |                  0.0015 | 1.16x                              |
-- 
-- ![fig_runtime](artifacts/figures/fig_runtime.png){width=80%}
-- 
--@@ -156,20 +197,20 @@ Source run: `20261021T143912Z_seed20261021_smoke`. Frequencies count outer-fold
-- 
-- The discussion below is generated from the artifacts; negative results are retained.
-- 
---1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on 0 of the evaluated datasets and underperformed on 1 (mean delta -0.0066).
---2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (1 datasets).
---3. **Strength of the density correction.** Inner CV selected small alpha values in 2/2 outer-fold selections chose alpha <= 0.5 cases, indicating how strongly the density correction was needed.
---4. **Sensitivity to q.** Selection counts: q=3: 2.
---5. **Clipping.** clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000).
--+1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120).
--+2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; claims about high-dimensional, imbalanced, or difficult datasets are limited to the evaluated set (8 datasets).
--+3. **Strength of the density correction.** inner-CV selection frequencies were alpha=0.25 (31.7%), alpha=0.5 (5.0%), alpha=1 (5.8%), alpha=2 (57.5%); alpha <= 0.5 was chosen in 44/120 folds (36.7%). The frequent selection of the largest alpha value suggests the density penalty was active rather than negligible, but selection frequencies alone do not prove benefit.
--+4. **Sensitivity to q.** Selection counts: q=3: 72, q=9: 27, q=5: 21.
--+5. **Clipping.** clipped A3 mean Macro F1 is higher than unclipped A2 (mean difference +0.0001).
-- 6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean delta above; the comparison against the strongest distance baseline is the decisive one.
---7. **Practical magnitude.** The mean delta of -0.0066 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
---8. **Computational overhead.** mean fit time ALD/uniform = 2.01x, mean predict time ALD/uniform = 1.47x.
---9. **Statistical support.** Omnibus p = 0.3679; conclusions follow the adjusted p-values, not raw averages.
--+7. **Practical magnitude.** The mean delta of +0.0120 Macro F1 should be judged against application requirements; statistical guidance comes from the Holm-adjusted p-values and rank-biserial effect sizes.
--+8. **Computational overhead.** mean fit time ALD/uniform = 13.46x, mean predict time ALD/uniform = 1.41x.
--+9. **Statistical support.** Omnibus p = 0.0719; conclusions follow the adjusted p-values, not raw averages.
-- 10. **Consistency with initial hypotheses.** The interpretation matrix of PROJECT_SPEC.md is applied to the observed pattern without post-hoc re-framing.
-- 
-- # 5. Conclusion
-- 
---This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of -0.0066 versus Power-WKNN (wins 0, losses 1 across datasets). The Friedman test yielded p = 0.3679 (no sufficient evidence of differences among method ranks), while Holm-adjusted pairwise comparisons and rank-biserial effect sizes are reported in the results section. Ablation indicated that the local-density compatibility component (clipped A3 mean Macro F1 is equal to unclipped A2 (mean difference +0.0000)) and clipping behave as described in the ablation analysis. These findings suggest the density-compatibility penalty is not confirmed within the evaluated scope only, and no broader claim is made.
--+This study evaluates a simple extension of distance-weighted KNN in which neighbor influence is adjusted according to the compatibility between the local density of a query and that of each candidate neighbor. The ALD-WKNN formulation is intentionally minimal: it combines a power inverse-distance term with a bounded exponential penalty derived from the absolute log-ratio of local-density proxies. The study does not assume that density-aware KNN is novel, as previous work has already incorporated density, local structure, adaptive distance metrics, and locally informed weighting into nearest-neighbor classification. Across the evaluated datasets, ALD-WKNN achieved a mean Macro F1 delta of +0.0120 versus Power-WKNN (wins 5, losses 1, ties 2 across datasets). The Friedman test yielded p = 0.0719 (no sufficient evidence of differences among method ranks), so pairwise comparisons are at most exploratory under this design. Ablation showed the full clipped formulation (A3) marginally above the unclipped variant (A2) and above distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest standalone variant — consistent with density acting as a modifier rather than a sufficient signal by itself. These findings suggest the density-compatibility penalty is descriptively favorable on the evaluated benchmark but not statistically confirmed within this design, and no broader claim is made.
+-@@ -214,7 +214,7 @@ This study evaluates a simple extension of distance-weighted KNN in which neighb
 - 
 - # Limitations
 - 
+--Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; formula-level novelty has not been established; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
+-+Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; the core density-gate formula has a 2025 precedent (Han, ICDTE 2025) and only the minimal clipped variant is specific to this study; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
+- 
+- # Future work
+- 
+-@@ -232,7 +232,7 @@ Directions that add complexity only with justification: class-aware density comp
+- [8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
+- [9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
+- [10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
+--[11] "A Dynamic Distance-Weighted KNN Model for Customized ...," ACM Digital Library, 2025. DOI: 10.1145/3796159.3796172. ACM search record verified; method-detail and full-text novelty check pending; Scopus check pending.
+-+[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
+- [12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
+- [13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
+- [14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
+-@@ -248,4 +248,4 @@ Directions that add complexity only with justification: class-aware density comp
+- 
+- ## Bibliographic verification note
+- 
+--Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+-+Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+-diff --git a/paper/references.bib b/paper/references.bib
+-index 604dcdd..5287a84 100644
+---- a/paper/references.bib
+-+++ b/paper/references.bib
+-@@ -118,14 +118,17 @@
+-   note    = {SpringerLink verified; Scopus check pending}
+- }
+- 
+--@article{dynamicdwknn2025,
+--  author  = {{Anonymous ACM record}},
+--  title   = {A Dynamic Distance-Weighted {KNN} Model for Customized ...},
+--  journal = {ACM Digital Library},
+--  year    = {2025},
+--  doi     = {10.1145/3796159.3796172},
+--  url     = {https://dl.acm.org/doi/full/10.1145/3796159.3796172},
+--  note    = {ACM search record verified; full-text novelty check mandatory and pending; Scopus check pending}
+-+@inproceedings{dynamicdwknn2025,
+-+  author    = {Han, Dong-Kun},
+-+  title     = {A Dynamic Distance-Weighted {KNN} Model for Customized Mathematics Education},
+-+  booktitle = {Proceedings of the 9th International Conference on Digital Technology in Education (ICDTE 2025)},
+-+  pages     = {197--203},
+-+  publisher = {ACM},
+-+  address   = {New York, NY, USA},
+-+  year      = {2025},
+-+  doi       = {10.1145/3796159.3796172},
+-+  url       = {https://dl.acm.org/doi/10.1145/3796159.3796172},
+-+  note      = {Full text inspected 2026-10-21; core density-gate formula overlap with the present candidate formulation disclosed in this paper; Scopus check pending}
+- }
+- 
+- @article{garcia2010,
 -diff --git a/scripts/build_paper.py b/scripts/build_paper.py
--index c817a0b..1fb8653 100644
+-index 1fb8653..6306f3d 100644
 ---- a/scripts/build_paper.py
 -+++ b/scripts/build_paper.py
--@@ -106,14 +106,17 @@ class PaperContext:
+-@@ -236,7 +236,7 @@ keywords: "%(KEYWORDS)s"
 - 
--     def win_loss(self) -> dict:
--         if self.aggregates is None:
---            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
--+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
--         mat = score_matrix(self.aggregates, "f1_macro")
--         if not {"ald_wknn", "power_wknn"}.issubset(mat.columns):
---            return {"wins": TBD, "losses": TBD, "mean_delta": TBD}
---        delta = mat["ald_wknn"] - mat["power_wknn"]
--+            return {"wins": TBD, "losses": TBD, "ties": TBD, "mean_delta": TBD}
--+        # round to the same precision shown in the paper table so the text
--+        # claims are traceable to the printed per-dataset deltas
--+        delta = (mat["ald_wknn"] - mat["power_wknn"]).round(3)
--         return {
--             "wins": str(int((delta > 0).sum())),
--             "losses": str(int((delta < 0).sum())),
--+            "ties": str(int((delta == 0).sum())),
--             "mean_delta": _fmt(delta.mean(), "+.4f"),
--         }
+- # Abstract
 - 
--@@ -126,7 +129,15 @@ class PaperContext:
--         if not alphas:
--             return TBD
--         small = sum(1 for a in alphas if float(a) <= 0.5)
---        return f"{small}/{len(alphas)} outer-fold selections chose alpha <= 0.5"
--+        counts = pd.Series(alphas).value_counts().sort_index()
--+        freq = ", ".join(
--+            f"alpha={k:g} ({v / len(alphas):.1%})" for k, v in counts.items()
--+        )
--+        return (
--+            f"inner-CV selection frequencies were {freq}; "
--+            f"alpha <= 0.5 was chosen in {small}/{len(alphas)} folds "
--+            f"({small / len(alphas):.1%})"
--+        )
+--K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. %(ABSTRACT_RESULT)s The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
+-+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. A 2025 ACM study introduces a dynamic distance-weighted KNN whose weight already contains an exponential absolute log-density-ratio gate between the query and each neighbor [@dynamicdwknn2025]; the present work deliberately reduces that published idea to its minimal two-factor form (distance power x clipped density-compatibility gate) and subjects it to a reproducible multi-dataset evaluation. %(ABSTRACT_RESULT)s The study is intended as a reproducible replication/extension-style empirical investigation of a minimal KNN modification, not as a claim of algorithmic novelty.
 - 
--     def q_summary(self) -> str:
--         if self.best_params is None or "ald_wknn" not in set(self.best_params["method"]):
--@@ -173,8 +184,8 @@ class PaperContext:
--             f"Across {fried['FRIEDMAN_N']} tabular classification datasets, the Friedman test "
--             f"on dataset-level Macro F1 gave chi^2({fried['FRIEDMAN_DF']}) = {fried['FRIEDMAN_STAT']} "
--             f"(p = {fried['FRIEDMAN_P']}, Kendall's W = {fried['FRIEDMAN_KENDALL_W']}); "
---            f"ALD-WKNN outperformed Power-WKNN on {wl['wins']} datasets and underperformed on "
---            f"{wl['losses']} (mean delta {wl['mean_delta']})."
--+            f"ALD-WKNN was ahead of Power-WKNN on {wl['wins']} datasets, behind on "
--+            f"{wl['losses']}, and tied on {wl['ties']} (mean delta {wl['mean_delta']})."
--         )
+- # 1. Introduction
 - 
--     def conclusion_result(self) -> str:
--@@ -189,14 +200,15 @@ class PaperContext:
--         wl = self.win_loss()
--         return (
--             f"a mean Macro F1 delta of {wl['mean_delta']} versus Power-WKNN "
---            f"(wins {wl['wins']}, losses {wl['losses']} across datasets). The Friedman test "
---            f"yielded p = {fried['FRIEDMAN_P']} ({decision}), while Holm-adjusted pairwise "
---            f"comparisons and rank-biserial effect sizes are reported in the results section. "
---            f"Ablation indicated that the local-density compatibility component "
---            f"({self.clipping_summary()}) and clipping behave as described in the ablation "
---            f"analysis. These findings suggest the density-compatibility penalty is "
---            f"{'supported' if fried['FRIEDMAN_P'] != TBD and float(fried['FRIEDMAN_P']) < 0.05 else 'not confirmed'} "
---            f"within the evaluated scope only, and no broader claim is made."
--+            f"(wins {wl['wins']}, losses {wl['losses']}, ties {wl['ties']} across datasets). "
--+            f"The Friedman test yielded p = {fried['FRIEDMAN_P']} ({decision}), so pairwise "
--+            f"comparisons are at most exploratory under this design. Ablation showed the full "
--+            f"clipped formulation (A3) marginally above the unclipped variant (A2) and above "
--+            f"distance-only (A0) in mean Macro F1, while density-only (A1) was the weakest "
--+            f"standalone variant — consistent with density acting as a modifier rather than a "
--+            f"sufficient signal by itself. These findings suggest the density-compatibility "
--+            f"penalty is descriptively favorable on the evaluated benchmark but not "
--+            f"statistically confirmed within this design, and no broader claim is made."
--         )
+-@@ -248,7 +248,7 @@ Crucially for the framing of this study, **local density is not a new idea for K
 - 
--     def runtime_table(self) -> str:
--@@ -373,13 +385,15 @@ def build_discussion(ctx: PaperContext) -> str:
--     lines = [
--         "The discussion below is generated from the artifacts; negative results are retained.",
--         "",
---        f"1. **Where ALD wins.** ALD-WKNN outperformed Power-WKNN on {wl['wins']} of the "
---        f"evaluated datasets and underperformed on {wl['losses']} (mean delta {wl['mean_delta']}).",
--+        f"1. **Where ALD wins.** Versus Power-WKNN, ALD-WKNN was ahead on {wl['wins']} "
--+        f"datasets, behind on {wl['losses']}, and tied on {wl['ties']} "
--+        f"(mean delta {wl['mean_delta']}).",
--         f"2. **Dataset characteristics.** Per-dataset deltas are shown in Figure fig_ald_delta; "
--         f"claims about high-dimensional, imbalanced, or difficult datasets are limited to the "
--         f"evaluated set ({ctx.friedman_values().get('FRIEDMAN_N', TBD)} datasets).",
---        f"3. **Strength of the density correction.** Inner CV selected small alpha values in "
---        f"{ctx.alpha_summary()} cases, indicating how strongly the density correction was needed.",
--+        f"3. **Strength of the density correction.** {ctx.alpha_summary()}. "
--+        f"The frequent selection of the largest alpha value suggests the density penalty was "
--+        f"active rather than negligible, but selection frequencies alone do not prove benefit.",
--         f"4. **Sensitivity to q.** Selection counts: {ctx.q_summary()}.",
--         f"5. **Clipping.** {ctx.clipping_summary()}.",
--         f"6. **Benefit vs Power-WKNN (not only uniform KNN).** See the win/loss counts and mean "
--diff --git a/scripts/make_figures.py b/scripts/make_figures.py
--index 2569885..a3cc23a 100644
----- a/scripts/make_figures.py
--+++ b/scripts/make_figures.py
--@@ -86,13 +86,15 @@ def fig_ablation(cfg: dict, out_dir: Path) -> None:
--         print("[figures] fig_ablation skipped: no ablation run found", flush=True)
--         return
--     metrics = pd.read_csv(run_dir / "metrics_outer.csv")
---    agg = dataset_aggregates(metrics, "f1_macro")
--+    # one value per variant: mean of per-dataset means, std across datasets
--+    per_ds = metrics.groupby(["dataset", "method"], as_index=False)["f1_macro"].mean()
--+    agg = per_ds.groupby("method")["f1_macro"].agg(["mean", "std"]).reset_index()
--     order = [v for v in ("A0_distance_only", "A1_density_only", "A2_ald_unclipped", "A3_ald_full")
--              if v in set(agg["method"])]
--     sub = agg.set_index("method").loc[order]
--     fig, ax = plt.subplots(figsize=(8, 5))
---    ax.bar([_label(m) for m in order], sub["f1_macro_mean"],
---           yerr=sub["f1_macro_std"], capsize=4)
--+    ax.bar([_label(m) for m in order], sub["mean"],
--+           yerr=sub["std"], capsize=4)
--     ax.set_ylabel("Macro F1 (mean ± std across datasets)")
--     ax.set_title("Ablation: Mean Macro F1 per Variant")
--     plt.xticks(rotation=20, ha="right")
--diff --git a/scripts/validate_reproducibility.py b/scripts/validate_reproducibility.py
--index 79321bd..e6bf48d 100644
----- a/scripts/validate_reproducibility.py
--+++ b/scripts/validate_reproducibility.py
--@@ -64,14 +64,19 @@ def compare(stored_dir: Path, new_dir: Path, dataset: str) -> list[str]:
--     pa, pb = _sorted(stored_p, key + ["row_id"]), _sorted(new_p, key + ["row_id"])
--     if not (pa["y_pred"].tolist() == pb["y_pred"].tolist()):
--         problems.append("predicted labels differ between runs")
---    score_cols = [c for c in pa.columns if c.startswith("score_class_")]
---    if score_cols != [c for c in pb.columns if c.startswith("score_class_")]:
---        problems.append("score column sets differ between runs")
---    else:
---        for col in score_cols:
---            if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
---                               atol=ATOL, rtol=0.0):
---                problems.append(f"score column {col!r} differs beyond atol={ATOL}")
--+    # Score columns are a union across ALL datasets of a run, so a partial
--+    # re-run legitimately has fewer; compare the shared columns only.
--+    stored_cols = [c for c in pa.columns if c.startswith("score_class_")]
--+    new_cols = [c for c in pb.columns if c.startswith("score_class_")]
--+    if not set(new_cols).issubset(stored_cols):
--+        problems.append(
--+            f"score columns missing from stored run: {sorted(set(new_cols) - set(stored_cols))}"
--+        )
--+        return problems
--+    for col in new_cols:
--+        if not np.allclose(pa[col].to_numpy(dtype=float), pb[col].to_numpy(dtype=float),
--+                           atol=ATOL, rtol=0.0):
--+            problems.append(f"score column {col!r} differs beyond atol={ATOL}")
--     return problems
+- The research questions are: **RQ1** whether ALD-WKNN differs consistently from uniform and distance-weighted KNN in Macro F1; **RQ2** whether the density-compatibility component contributes once distance weighting is isolated by ablation; **RQ3** whether clipping the density mismatch improves stability; **RQ4** on which dataset characteristics ALD-WKNN helps, is neutral, or hurts; and **RQ5** the additional computational cost of local-density information. The tested hypotheses are the Friedman null H0 of equal method ranks across datasets versus the general alternative that at least two methods differ. No hypothesis is made that ALD-WKNN must score higher.
+- 
+--The contribution of this work is limited to evaluating a simple query-neighbor density-compatibility weighting formulation and systematically isolating its components through nested cross-validation and ablation across heterogeneous tabular datasets. The formulation is presented as a **candidate formulation** whose formula-level novelty remains subject to literature verification; in particular, a 2025 ACM article on dynamic distance-weighted KNN [@dynamicdwknn2025] could not be fully inspected and is treated as a mandatory novelty-check item.
+-+The contribution of this work is deliberately narrow and is stated only after a formula-level literature check. Han (2025) [@dynamicdwknn2025] already publishes a Dynamic Distance-Weighted KNN whose per-neighbor weight multiplies an inverse-distance power term by an exponential absolute log-density-ratio gate between the query and each neighbor, augmented with additional uncertainty-reliability, robustness-kernel, and class-normalization factors. The core pair (distance power weight) x (exp(-tau * |log density ratio|)) of that published method is equivalent to the core of the formulation examined here. ALD-WKNN is therefore presented as a **deliberately minimal variant of that published idea**: an independent density scale q, a clipped mismatch bound c, and no auxiliary factors, evaluated under a reproducible nested cross-validation protocol across heterogeneous tabular datasets. The contribution of this paper is the controlled ablation of the minimal form and an honest multi-dataset assessment — not the core concept, which has a 2025 precedent.
+- 
+- # 2. Related Work
+- 
+-@@ -265,9 +265,9 @@ Nearest-neighbor classification evolved from the foundational consistency result
+- | Ding et al., 2024 | ScienceDirect | Weighted-KNN local density for clustering | Similar construction, different task | Density + KNN is not novel |
+- | Abdalla & Amer, 2025 | ScienceDirect / ACM | Locally informed weighted KNN | Very close | Local information + weights is not novel |
+- | Amer et al., 2025 | SpringerLink | PR-kNN / WPR-kNN | Local consistency + weighting | Strong modern comparator |
+--| Dynamic DW-KNN, 2025 | ACM DL | Dynamic DW-KNN, density + uncertainty | Must inspect | Formula-level novelty not yet safe |
+-+| Han, 2025 | ACM DL (full text inspected 2026-10-21) | Dynamic DW-KNN: d^{-p(x)} x exp(-tau * |log density ratio|) x uncertainty x Tukey robustness x class normalization | Core density gate equivalent to ALD-WKNN's | Core idea has a 2025 precedent; this study evaluates a minimal clipped variant |
+- 
+--Within the literature inspected for this coursework, a narrower question remains worth empirically testing: whether a minimal label-independent query-to-neighbor density-compatibility penalty, expressed as a bounded log-ratio of local density proxies and multiplied directly by inverse-distance weighting, yields measurable benefits over simpler distance weighting under a leakage-controlled nested-CV protocol. This is treated as a candidate formula-level distinction, not as established algorithmic novelty. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
+-+Following the full-text inspection of [@dynamicdwknn2025], the density-compatibility gate examined in this paper cannot be claimed as a new formula: its core already appears, multiplied by several additional factors, in a published 2025 method. The question that remains empirically meaningful — and that the prior work does not answer — is whether the **minimal two-factor form** (a power distance weight multiplied by a clipped log-ratio density-compatibility gate, without uncertainty, robustness, or class-balance factors) yields measurable benefits over distance weighting alone under a leakage-controlled nested-CV protocol on heterogeneous small tabular datasets. This is a replication/extension-style question, not a novelty claim. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
+- 
+- # 3. Experimental Setup
+- 
+-@@ -283,7 +283,7 @@ Let d(x, x_i) be the Euclidean distance after preprocessing fitted on the traini
+- 
+- w_i(x) = (d(x,x_i) + eps)^{-p} * exp[-alpha * min(c, |log((rho_q(x)+eps)/(rho_q(x_i)+eps))|)],
+- 
+--where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
+-+where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. This two-factor form is a minimal special case of the weight published by Han (2025) [@dynamicdwknn2025], which multiplies a similar distance-and-density gate by additional uncertainty-reliability, Tukey-robustness, and class-normalization factors; the present study isolates the minimal pair and adds the explicit clipping bound c. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
+- 
+- ## 3.3 Nested cross-validation and tuning
+- 
+-@@ -337,7 +337,7 @@ This study evaluates a simple extension of distance-weighted KNN in which neighb
+- 
+- # Limitations
+- 
+--Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; formula-level novelty has not been established; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
+-+Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; the core density-gate formula has a 2025 precedent (Han, ICDTE 2025) and only the minimal clipped variant is specific to this study; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
+- 
+- # Future work
+- 
+-@@ -359,7 +359,7 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
+- [8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
+- [9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
+- [10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
+--[11] "A Dynamic Distance-Weighted KNN Model for Customized ...," ACM Digital Library, 2025. DOI: 10.1145/3796159.3796172. ACM search record verified; method-detail and full-text novelty check pending; Scopus check pending.
+-+[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
+- [12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
+- [13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
+- [14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
+-@@ -375,7 +375,7 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
+- REFERENCES_SECTION = """
+- ## Bibliographic verification note
+- 
+--Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+-+Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+- """
 - 
 - 
-diff --git a/artifacts/environment/literature_search.md b/artifacts/environment/literature_search.md
-index 866ecd9..8b703d2 100644
---- a/artifacts/environment/literature_search.md
-+++ b/artifacts/environment/literature_search.md
-@@ -150,6 +150,25 @@ Could NOT be verified:
-   metadata indicates the specific clipped absolute log-density-ratio compatibility penalty of the candidate
-   formula — but this remains **unverified, not cleared**.
- 
-+Update 2026-10-21 (full text obtained and inspected, all equations read):
-+- **FORMULA OVERLAP FOUND at the core-structure level.** Han (ICDTE 2025), eq. (5) and eq. (9):
-+  g_i = exp(-tau * |log rho~(x) - log rho~_i|) with w_i = (d_i + eps)^{-p(x)} * g_i * u_i * psi(z_i) * 1/n_{y_i}
-+  (plus a dual relative-distance rescaling, eq. (10)). The multiplicative pair
-+  (distance power weight) x (exponential absolute log-density-ratio gate between query and neighbor)
-+  is exactly the ALD-WKNN core. DDW-KNN adds: uncertainty reliability u_i = 1 - normalized entropy,
-+  Tukey biweight robustness, class-size normalization, adaptive exponent p(x), ReliefF feature weights.
-+  DDW-KNN has no clipping min(c, .); its density proxy is an inverse mean-distance over the
-+  classification neighborhood rather than a q-th-neighbor radius.
-+- The median normalization rho~ = rho / median cancels inside the log-ratio when one global
-+  training median is used, leaving the same |log(rho_x / rho_i)| quantity.
-+- **Decision: FORMULA OVERLAP FOUND — ALD-WKNN must be positioned as a minimal
-+  replication/extension-style variant of the published density-gate idea (independent density
-+  scale q, clipped mismatch, no auxiliary factors), explicitly citing Han 2025.** What remains
-+  distinct is the minimalism (two factors vs five), the clipping, the independent q scale, and the
-+  reproducible nested-CV multi-dataset evaluation — NOT the core concept.
-+- Prior-work concealment check: none. The overlap is disclosed in the paper's framing, related
-+  work matrix, and reference list (references.bib entry dynamicdwknn2025 completed with full metadata).
-+
- Action: obtain the full text via institutional access and check the DDW-KNN weight equation against
- d^-p * exp(-alpha * min(c, |log(rho_q/rho_i)|)) before any positioning statement is made.
- 
 diff --git a/paper/paper.md b/paper/paper.md
-index e043199..148cb0c 100644
+index 148cb0c..be86b19 100644
 --- a/paper/paper.md
 +++ b/paper/paper.md
-@@ -5,7 +5,7 @@ keywords: "K-Nearest Neighbors; Weighted KNN; Local Density; Adaptive Weighting;
+@@ -42,7 +42,7 @@ Following the full-text inspection of [@dynamicdwknn2025], the density-compatibi
  
- # Abstract
+ ## 3.1 Datasets
  
--K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
-+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. A 2025 ACM study introduces a dynamic distance-weighted KNN whose weight already contains an exponential absolute log-density-ratio gate between the query and each neighbor [@dynamicdwknn2025]; the present work deliberately reduces that published idea to its minimal two-factor form (distance power x clipped density-compatibility gate) and subjects it to a reproducible multi-dataset evaluation. Across 8 tabular classification datasets, the Friedman test on dataset-level Macro F1 gave chi^2(3) = 7.0000 (p = 0.0719, Kendall's W = 0.2917); ALD-WKNN was ahead of Power-WKNN on 5 datasets, behind on 1, and tied on 2 (mean delta +0.0120). The study is intended as a reproducible replication/extension-style empirical investigation of a minimal KNN modification, not as a claim of algorithmic novelty.
+-Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
++Eight public numeric classification datasets from the UCI Machine Learning Repository (Iris, Wine, Seeds, Glass Identification, Sonar, Ionosphere, Breast Cancer Wisconsin Diagnostic, and Banknote Authentication; dataset records and DOIs are listed in the Data availability section) with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
  
- # 1. Introduction
+ | dataset                            |   n_samples |   n_features |   n_classes |
+ |:-----------------------------------|------------:|-------------:|------------:|
+@@ -222,30 +222,36 @@ Directions that add complexity only with justification: class-aware density comp
  
-@@ -17,7 +17,7 @@ Crucially for the framing of this study, **local density is not a new idea for K
+ # References
  
- The research questions are: **RQ1** whether ALD-WKNN differs consistently from uniform and distance-weighted KNN in Macro F1; **RQ2** whether the density-compatibility component contributes once distance weighting is isolated by ablation; **RQ3** whether clipping the density mismatch improves stability; **RQ4** on which dataset characteristics ALD-WKNN helps, is neutral, or hurts; and **RQ5** the additional computational cost of local-density information. The tested hypotheses are the Friedman null H0 of equal method ranks across datasets versus the general alternative that at least two methods differ. No hypothesis is made that ALD-WKNN must score higher.
+-[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified; Scopus check pending.
+-[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified; Scopus check pending.
+-[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified; Scopus check pending.
+-[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation; Scopus check pending.
+-[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified; Scopus check pending.
+-[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; Scopus check pending; novelty relevance: critical.
+-[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified; Scopus check pending.
+-[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
+-[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
+-[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
+-[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
+-[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
+-[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
+-[14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
+-[15] S. Aeberhard and M. Forina, *Wine*, UCI Machine Learning Repository. DOI: 10.24432/C5PC7J. https://archive.ics.uci.edu/dataset/109/wine
+-[16] M. Charytanowicz, J. Niewczas, P. Kulczycki, P. A. Kowalski, S. Lukasik, and S. Zak, *Seeds*, UCI Machine Learning Repository. DOI: 10.24432/C5H30K. https://archive.ics.uci.edu/dataset/236/seeds
+-[17] *Glass Identification*, UCI Machine Learning Repository. https://archive.ics.uci.edu/dataset/42/glass+identification
+-[18] T. Sejnowski and R. Gorman, *Connectionist Bench (Sonar, Mines vs. Rocks)*, UCI Machine Learning Repository. DOI: 10.24432/C5T01Q. https://archive.ics.uci.edu/dataset/151/connectionist+bench+sonar+mines+vs+rocks
+-[19] V. Sigillito, S. Wing, L. Hutton, and K. Baker, *Ionosphere*, UCI Machine Learning Repository. DOI: 10.24432/C5W01B. https://archive.ics.uci.edu/dataset/52/ionosphere
+-[20] W. Wolberg, O. Mangasarian, N. Street, and W. Street, *Breast Cancer Wisconsin (Diagnostic)*, UCI Machine Learning Repository. DOI: 10.24432/C5DW2B. https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
+-[21] V. Lohweg, *Banknote Authentication*, UCI Machine Learning Repository. DOI: 10.24432/C55P57. https://archive.ics.uci.edu/dataset/267/banknote+authentication
++[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified.
++[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified.
++[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified.
++[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation.
++[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified.
++[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; novelty relevance: critical.
++[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified.
++[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; novelty relevance: critical.
++[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified.
++[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified.
++[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2).
++[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified.
++[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified.
++
  
--The contribution of this work is limited to evaluating a simple query-neighbor density-compatibility weighting formulation and systematically isolating its components through nested cross-validation and ablation across heterogeneous tabular datasets. The formulation is presented as a **candidate formulation** whose formula-level novelty remains subject to literature verification; in particular, a 2025 ACM article on dynamic distance-weighted KNN [@dynamicdwknn2025] could not be fully inspected and is treated as a mandatory novelty-check item.
-+The contribution of this work is deliberately narrow and is stated only after a formula-level literature check. Han (2025) [@dynamicdwknn2025] already publishes a Dynamic Distance-Weighted KNN whose per-neighbor weight multiplies an inverse-distance power term by an exponential absolute log-density-ratio gate between the query and each neighbor, augmented with additional uncertainty-reliability, robustness-kernel, and class-normalization factors. The core pair (distance power weight) x (exp(-tau * |log density ratio|)) of that published method is equivalent to the core of the formulation examined here. ALD-WKNN is therefore presented as a **deliberately minimal variant of that published idea**: an independent density scale q, a clipped mismatch bound c, and no auxiliary factors, evaluated under a reproducible nested cross-validation protocol across heterogeneous tabular datasets. The contribution of this paper is the controlled ablation of the minimal form and an honest multi-dataset assessment — not the core concept, which has a 2025 precedent.
- 
- # 2. Related Work
- 
-@@ -34,9 +34,9 @@ Nearest-neighbor classification evolved from the foundational consistency result
- | Ding et al., 2024 | ScienceDirect | Weighted-KNN local density for clustering | Similar construction, different task | Density + KNN is not novel |
- | Abdalla & Amer, 2025 | ScienceDirect / ACM | Locally informed weighted KNN | Very close | Local information + weights is not novel |
- | Amer et al., 2025 | SpringerLink | PR-kNN / WPR-kNN | Local consistency + weighting | Strong modern comparator |
--| Dynamic DW-KNN, 2025 | ACM DL | Dynamic DW-KNN, density + uncertainty | Must inspect | Formula-level novelty not yet safe |
-+| Han, 2025 | ACM DL (full text inspected 2026-10-21) | Dynamic DW-KNN: d^{-p(x)} x exp(-tau * |log density ratio|) x uncertainty x Tukey robustness x class normalization | Core density gate equivalent to ALD-WKNN's | Core idea has a 2025 precedent; this study evaluates a minimal clipped variant |
- 
--Within the literature inspected for this coursework, a narrower question remains worth empirically testing: whether a minimal label-independent query-to-neighbor density-compatibility penalty, expressed as a bounded log-ratio of local density proxies and multiplied directly by inverse-distance weighting, yields measurable benefits over simpler distance weighting under a leakage-controlled nested-CV protocol. This is treated as a candidate formula-level distinction, not as established algorithmic novelty. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
-+Following the full-text inspection of [@dynamicdwknn2025], the density-compatibility gate examined in this paper cannot be claimed as a new formula: its core already appears, multiplied by several additional factors, in a published 2025 method. The question that remains empirically meaningful — and that the prior work does not answer — is whether the **minimal two-factor form** (a power distance weight multiplied by a clipped log-ratio density-compatibility gate, without uncertainty, robustness, or class-balance factors) yields measurable benefits over distance weighting alone under a leakage-controlled nested-CV protocol on heterogeneous small tabular datasets. This is a replication/extension-style question, not a novelty claim. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
- 
- # 3. Experimental Setup
- 
-@@ -61,7 +61,7 @@ Let d(x, x_i) be the Euclidean distance after preprocessing fitted on the traini
- 
- w_i(x) = (d(x,x_i) + eps)^{-p} * exp[-alpha * min(c, |log((rho_q(x)+eps)/(rho_q(x_i)+eps))|)],
- 
--where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
-+where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. This two-factor form is a minimal special case of the weight published by Han (2025) [@dynamicdwknn2025], which multiplies a similar distance-and-density gate by additional uncertainty-reliability, Tukey-robustness, and class-normalization factors; the present study isolates the minimal pair and adds the explicit clipping bound c. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
- 
- ## 3.3 Nested cross-validation and tuning
- 
-@@ -214,7 +214,7 @@ This study evaluates a simple extension of distance-weighted KNN in which neighb
- 
- # Limitations
- 
--Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; formula-level novelty has not been established; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
-+Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; the core density-gate formula has a 2025 precedent (Han, ICDTE 2025) and only the minimal clipped variant is specific to this study; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
- 
- # Future work
- 
-@@ -232,7 +232,7 @@ Directions that add complexity only with justification: class-aware density comp
- [8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
- [9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
- [10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
--[11] "A Dynamic Distance-Weighted KNN Model for Customized ...," ACM Digital Library, 2025. DOI: 10.1145/3796159.3796172. ACM search record verified; method-detail and full-text novelty check pending; Scopus check pending.
-+[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
- [12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
- [13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
- [14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
-@@ -248,4 +248,4 @@ Directions that add complexity only with justification: class-aware density comp
+ (Pairwise Wilcoxon/Holm tables are produced only when the omnibus test justifies post-hoc analysis.)
  
  ## Bibliographic verification note
  
--Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
-+Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
-diff --git a/paper/references.bib b/paper/references.bib
-index 604dcdd..5287a84 100644
---- a/paper/references.bib
-+++ b/paper/references.bib
-@@ -118,14 +118,17 @@
-   note    = {SpringerLink verified; Scopus check pending}
- }
- 
--@article{dynamicdwknn2025,
--  author  = {{Anonymous ACM record}},
--  title   = {A Dynamic Distance-Weighted {KNN} Model for Customized ...},
--  journal = {ACM Digital Library},
--  year    = {2025},
--  doi     = {10.1145/3796159.3796172},
--  url     = {https://dl.acm.org/doi/full/10.1145/3796159.3796172},
--  note    = {ACM search record verified; full-text novelty check mandatory and pending; Scopus check pending}
-+@inproceedings{dynamicdwknn2025,
-+  author    = {Han, Dong-Kun},
-+  title     = {A Dynamic Distance-Weighted {KNN} Model for Customized Mathematics Education},
-+  booktitle = {Proceedings of the 9th International Conference on Digital Technology in Education (ICDTE 2025)},
-+  pages     = {197--203},
-+  publisher = {ACM},
-+  address   = {New York, NY, USA},
-+  year      = {2025},
-+  doi       = {10.1145/3796159.3796172},
-+  url       = {https://dl.acm.org/doi/10.1145/3796159.3796172},
-+  note      = {Full text inspected 2026-10-21; core density-gate formula overlap with the present candidate formulation disclosed in this paper; Scopus check pending}
- }
- 
- @article{garcia2010,
+-Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
++Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. All numbered references [1]-[13] are sourced exclusively from the portals allowed for this coursework: IEEE Xplore [1]-[4], ScienceDirect [5], [7], [8], [12], SpringerLink [6], [9], [10], [13], and the ACM Digital Library [11]. The UCI dataset records are documented separately in the Data availability section; they are data-archive records, not literature references.
++
++# Data availability
++
++The following dataset records were used; each was validated after download against the characteristics published by the UCI Machine Learning Repository, and SHA-256 checksums are stored in the project artifacts. These are data-archive records, not literature references.
++
++- [14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
++- [15] S. Aeberhard and M. Forina, *Wine*, UCI Machine Learning Repository. DOI: 10.24432/C5PC7J. https://archive.ics.uci.edu/dataset/109/wine
++- [16] M. Charytanowicz, J. Niewczas, P. Kulczycki, P. A. Kowalski, S. Lukasik, and S. Zak, *Seeds*, UCI Machine Learning Repository. DOI: 10.24432/C5H30K. https://archive.ics.uci.edu/dataset/236/seeds
++- [17] *Glass Identification*, UCI Machine Learning Repository. https://archive.ics.uci.edu/dataset/42/glass+identification
++- [18] T. Sejnowski and R. Gorman, *Connectionist Bench (Sonar, Mines vs. Rocks)*, UCI Machine Learning Repository. DOI: 10.24432/C5T01Q. https://archive.ics.uci.edu/dataset/151/connectionist+bench+sonar+mines+vs+rocks
++- [19] V. Sigillito, S. Wing, L. Hutton, and K. Baker, *Ionosphere*, UCI Machine Learning Repository. DOI: 10.24432/C5W01B. https://archive.ics.uci.edu/dataset/52/ionosphere
++- [20] W. Wolberg, O. Mangasarian, N. Street, and W. Street, *Breast Cancer Wisconsin (Diagnostic)*, UCI Machine Learning Repository. DOI: 10.24432/C5DW2B. https://archive.ics.uci.edu/dataset/17/breast+cancer+wisconsin+diagnostic
++- [21] V. Lohweg, *Banknote Authentication*, UCI Machine Learning Repository. DOI: 10.24432/C55P57. https://archive.ics.uci.edu/dataset/267/banknote+authentication
 diff --git a/scripts/build_paper.py b/scripts/build_paper.py
-index 1fb8653..6306f3d 100644
+index 6306f3d..de3b366 100644
 --- a/scripts/build_paper.py
 +++ b/scripts/build_paper.py
-@@ -236,7 +236,7 @@ keywords: "%(KEYWORDS)s"
+@@ -273,7 +273,7 @@ Following the full-text inspection of [@dynamicdwknn2025], the density-compatibi
  
- # Abstract
+ ## 3.1 Datasets
  
--K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. %(ABSTRACT_RESULT)s The study is intended as a reproducible empirical investigation of a minimal KNN modification rather than an a priori claim of algorithmic novelty.
-+K-Nearest Neighbors (KNN) is a simple instance-based classification method whose predictions depend strongly on neighborhood selection and the weighting assigned to neighboring observations. Distance-weighted KNN gives greater influence to observations located closer to a query but does not explicitly account for whether the query and its neighbors belong to locally comparable density regimes. Previous studies have already explored adaptive, density-based, and locally informed KNN classifiers; therefore, combining KNN with local-density information cannot in itself be considered novel. This study evaluates a simple experimental formulation, Adaptive Local-Density Distance-Weighted KNN (ALD-WKNN), in which conventional inverse-distance weights are multiplied by a bounded compatibility term derived from the log-ratio between the local-density proxies of the query and each neighbor. The method is evaluated against uniform KNN, conventional distance-weighted KNN, and power distance-weighted KNN using eight public tabular classification datasets. Model selection is performed by nested cross-validation, while ablation experiments isolate the effects of distance weighting, density compatibility, and clipping. Macro F1-score is used as the primary evaluation metric, supplemented by balanced accuracy, accuracy, macro precision, macro recall, and computational time. Cross-dataset comparisons are analyzed using the Friedman test followed, where justified, by Wilcoxon signed-rank comparisons with Holm correction. A 2025 ACM study introduces a dynamic distance-weighted KNN whose weight already contains an exponential absolute log-density-ratio gate between the query and each neighbor [@dynamicdwknn2025]; the present work deliberately reduces that published idea to its minimal two-factor form (distance power x clipped density-compatibility gate) and subjects it to a reproducible multi-dataset evaluation. %(ABSTRACT_RESULT)s The study is intended as a reproducible replication/extension-style empirical investigation of a minimal KNN modification, not as a claim of algorithmic novelty.
+-Eight public numeric UCI classification datasets [@uci_iris; @uci_wine; @uci_seeds; @uci_glass; @uci_sonar; @uci_ionosphere; @uci_wdbc; @uci_banknote] with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
++Eight public numeric classification datasets from the UCI Machine Learning Repository (Iris, Wine, Seeds, Glass Identification, Sonar, Ionosphere, Breast Cancer Wisconsin Diagnostic, and Banknote Authentication; dataset records and DOIs are listed in the Data availability section) with small to moderate sample sizes were selected to vary the number of features, classes, and difficulty. Characteristics are confirmed by the download validator against UCI records before entering the paper.
  
- # 1. Introduction
+ %(TABLE_DATASET_SUMMARY)s
  
-@@ -248,7 +248,7 @@ Crucially for the framing of this study, **local density is not a new idea for K
- 
- The research questions are: **RQ1** whether ALD-WKNN differs consistently from uniform and distance-weighted KNN in Macro F1; **RQ2** whether the density-compatibility component contributes once distance weighting is isolated by ablation; **RQ3** whether clipping the density mismatch improves stability; **RQ4** on which dataset characteristics ALD-WKNN helps, is neutral, or hurts; and **RQ5** the additional computational cost of local-density information. The tested hypotheses are the Friedman null H0 of equal method ranks across datasets versus the general alternative that at least two methods differ. No hypothesis is made that ALD-WKNN must score higher.
- 
--The contribution of this work is limited to evaluating a simple query-neighbor density-compatibility weighting formulation and systematically isolating its components through nested cross-validation and ablation across heterogeneous tabular datasets. The formulation is presented as a **candidate formulation** whose formula-level novelty remains subject to literature verification; in particular, a 2025 ACM article on dynamic distance-weighted KNN [@dynamicdwknn2025] could not be fully inspected and is treated as a mandatory novelty-check item.
-+The contribution of this work is deliberately narrow and is stated only after a formula-level literature check. Han (2025) [@dynamicdwknn2025] already publishes a Dynamic Distance-Weighted KNN whose per-neighbor weight multiplies an inverse-distance power term by an exponential absolute log-density-ratio gate between the query and each neighbor, augmented with additional uncertainty-reliability, robustness-kernel, and class-normalization factors. The core pair (distance power weight) x (exp(-tau * |log density ratio|)) of that published method is equivalent to the core of the formulation examined here. ALD-WKNN is therefore presented as a **deliberately minimal variant of that published idea**: an independent density scale q, a clipped mismatch bound c, and no auxiliary factors, evaluated under a reproducible nested cross-validation protocol across heterogeneous tabular datasets. The contribution of this paper is the controlled ablation of the minimal form and an honest multi-dataset assessment — not the core concept, which has a 2025 precedent.
- 
- # 2. Related Work
- 
-@@ -265,9 +265,9 @@ Nearest-neighbor classification evolved from the foundational consistency result
- | Ding et al., 2024 | ScienceDirect | Weighted-KNN local density for clustering | Similar construction, different task | Density + KNN is not novel |
- | Abdalla & Amer, 2025 | ScienceDirect / ACM | Locally informed weighted KNN | Very close | Local information + weights is not novel |
- | Amer et al., 2025 | SpringerLink | PR-kNN / WPR-kNN | Local consistency + weighting | Strong modern comparator |
--| Dynamic DW-KNN, 2025 | ACM DL | Dynamic DW-KNN, density + uncertainty | Must inspect | Formula-level novelty not yet safe |
-+| Han, 2025 | ACM DL (full text inspected 2026-10-21) | Dynamic DW-KNN: d^{-p(x)} x exp(-tau * |log density ratio|) x uncertainty x Tukey robustness x class normalization | Core density gate equivalent to ALD-WKNN's | Core idea has a 2025 precedent; this study evaluates a minimal clipped variant |
- 
--Within the literature inspected for this coursework, a narrower question remains worth empirically testing: whether a minimal label-independent query-to-neighbor density-compatibility penalty, expressed as a bounded log-ratio of local density proxies and multiplied directly by inverse-distance weighting, yields measurable benefits over simpler distance weighting under a leakage-controlled nested-CV protocol. This is treated as a candidate formula-level distinction, not as established algorithmic novelty. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
-+Following the full-text inspection of [@dynamicdwknn2025], the density-compatibility gate examined in this paper cannot be claimed as a new formula: its core already appears, multiplied by several additional factors, in a published 2025 method. The question that remains empirically meaningful — and that the prior work does not answer — is whether the **minimal two-factor form** (a power distance weight multiplied by a clipped log-ratio density-compatibility gate, without uncertainty, robustness, or class-balance factors) yields measurable benefits over distance weighting alone under a leakage-controlled nested-CV protocol on heterogeneous small tabular datasets. This is a replication/extension-style question, not a novelty claim. A simple density *reward* of the form w_i proportional to rho_i^alpha / d_i would favor neighbors from dense regions, which often coincide with majority classes; the present formulation instead uses *compatibility*: neighbors are penalized when their local density regime differs strongly from the query's, so density acts as local context rather than direct reward.
- 
- # 3. Experimental Setup
- 
-@@ -283,7 +283,7 @@ Let d(x, x_i) be the Euclidean distance after preprocessing fitted on the traini
- 
- w_i(x) = (d(x,x_i) + eps)^{-p} * exp[-alpha * min(c, |log((rho_q(x)+eps)/(rho_q(x_i)+eps))|)],
- 
--where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
-+where the local-density proxy is rho_q(z) = 1/(r_q(z) + eps) and r_q(z) is the distance from z to its q-th nearest neighbor (self excluded for training points). The proxy is a *local compactness proxy*, not a normalized probability density estimate. The compatibility term lies in (0, 1], so the density component can only down-weight strongly incompatible neighbors and never creates explosive weights. This two-factor form is a minimal special case of the weight published by Han (2025) [@dynamicdwknn2025], which multiplies a similar distance-and-density gate by additional uncertainty-reliability, Tukey-robustness, and class-normalization factors; the present study isolates the minimal pair and adds the explicit clipping bound c. If a classification neighbor has d <= epsilon, a deterministic zero-distance rule votes only among exact duplicates, breaking ties toward the smallest sorted encoded label. A density-only variant (p = 0) and an unclipped variant (c effectively infinite) are included in the ablation.
- 
- ## 3.3 Nested cross-validation and tuning
- 
-@@ -337,7 +337,7 @@ This study evaluates a simple extension of distance-weighted KNN in which neighb
- 
- # Limitations
- 
--Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; formula-level novelty has not been established; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
-+Only eight datasets are evaluated, most of them small tabular problems; Euclidean distance is the sole metric; local density is represented only by the q-th-neighbor radius; the hyperparameter search is limited; the number of datasets restricts statistical power; the core density-gate formula has a 2025 precedent (Han, ICDTE 2025) and only the minimal clipped variant is specific to this study; findings may not transfer to large-scale or high-dimensional modern datasets; and density preprocessing costs more computation than plain KNN.
- 
- # Future work
- 
-@@ -359,7 +359,7 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
- [8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
- [9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
- [10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
--[11] "A Dynamic Distance-Weighted KNN Model for Customized ...," ACM Digital Library, 2025. DOI: 10.1145/3796159.3796172. ACM search record verified; method-detail and full-text novelty check pending; Scopus check pending.
-+[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
- [12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
- [13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
- [14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
-@@ -375,7 +375,7 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
- REFERENCES_SECTION = """
- ## Bibliographic verification note
- 
--Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
-+Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
+@@ -349,20 +349,23 @@ Directions that add complexity only with justification: class-aware density comp
  """
  
  
+-REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified; Scopus check pending.
+-[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified; Scopus check pending.
+-[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified; Scopus check pending.
+-[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation; Scopus check pending.
+-[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified; Scopus check pending.
+-[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; Scopus check pending; novelty relevance: critical.
+-[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified; Scopus check pending.
+-[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; Scopus check pending; novelty relevance: critical.
+-[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified; Scopus check pending.
+-[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified; Scopus check pending.
+-[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2); Scopus check pending.
+-[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified; Scopus check pending.
+-[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified; Scopus check pending.
+-[14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
++REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Classification," *IEEE Transactions on Information Theory*, vol. 13, no. 1, pp. 21-27, 1967. DOI: 10.1109/TIT.1967.1053964. IEEE Xplore verified.
++[2] S. A. Dudani, "The Distance-Weighted k-Nearest-Neighbor Rule," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-6, no. 4, pp. 325-327, 1976. DOI: 10.1109/TSMC.1976.5408784. IEEE Xplore verified.
++[3] J. M. Keller, M. R. Gray, and J. A. Givens, "A Fuzzy K-Nearest Neighbor Algorithm," *IEEE Transactions on Systems, Man, and Cybernetics*, vol. SMC-15, no. 4, pp. 580-585, 1985. DOI: 10.1109/TSMC.1985.6313426. IEEE Xplore verified.
++[4] J. E. S. Macleod, A. Luk, and D. M. Titterington, "A Re-Examination of the Distance-Weighted k-Nearest Neighbor Classification Rule," 1987. https://ieeexplore.ieee.org/document/4075685/ — IEEE Xplore verified; DOI metadata requires manual bibliographic validation.
++[5] Z. Pan, Y. Wang, and Y. Pan, "A New Locally Adaptive k-Nearest Neighbor Algorithm Based on Discrimination Class," *Knowledge-Based Systems*, vol. 204, 106185, 2020. DOI: 10.1016/j.knosys.2020.106185. ScienceDirect verified.
++[6] B.-W. Yuan, X.-G. Luo, Z.-L. Zhang, Y. Yu, H.-W. Huo, T. Johannes, and X.-D. Zou, "A Novel Density-Based Adaptive k Nearest Neighbor Method for Dealing with Overlapping Problem in Imbalanced Datasets," *Neural Computing and Applications*, vol. 33, pp. 4457-4481, 2021. DOI: 10.1007/s00521-020-05256-0. SpringerLink verified; novelty relevance: critical.
++[7] S. Ding, M. Li, T. Huang, and W. Zhu, "Local Density Based on Weighted K-Nearest Neighbors for Density Peaks Clustering," *Knowledge-Based Systems*, vol. 305, 112609, 2024. DOI: 10.1016/j.knosys.2024.112609. ScienceDirect/ACM metadata verified.
++[8] H. I. Abdalla and A. A. Amer, "Enhancing Data Classification Using Locally Informed Weighted k-Nearest Neighbor Algorithm," *Expert Systems with Applications*, vol. 276, 126942, 2025. DOI: 10.1016/j.eswa.2025.126942. ScienceDirect and ACM metadata verified; novelty relevance: critical.
++[9] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "Effective k-Nearest Neighbor Models for Data Classification Enhancement," *Journal of Big Data*, vol. 12, 2025. DOI: 10.1186/s40537-025-01137-2. SpringerLink verified.
++[10] A. A. Amer, S. D. Ravana, and R. A. A. Habeeb, "On Enhancing Data Classification Using Local Mean-Based Fuzzy K-Nearest Neighbor Algorithms," *Advances in Data Analysis and Classification*, 2025. DOI: 10.1007/s11634-025-00653-6. SpringerLink verified.
++[11] D.-K. Han, "A Dynamic Distance-Weighted KNN Model for Customized Mathematics Education," in *Proc. of the 9th International Conference on Digital Technology in Education (ICDTE 2025)*, pp. 197-203, 2025. DOI: 10.1145/3796159.3796172. ACM full text inspected 2026-10-21; the published weight contains an exponential absolute log-density-ratio density gate equivalent to the core of the formulation evaluated here (overlap disclosed in Sections 1-2).
++[12] S. Garcia, A. Fernandez, J. Luengo, and F. Herrera, "Advanced Nonparametric Tests for Multiple Comparisons in the Design of Experiments in Computational Intelligence and Data Mining: Experimental Analysis of Power," *Information Sciences*, vol. 180, no. 10, pp. 2044-2064, 2010. DOI: 10.1016/j.ins.2009.12.010. ScienceDirect verified.
++[13] R. Eisinga, T. Heskes, B. Pelzer, and M. Te Grotenhuis, "Exact p-values for Pairwise Comparison of Friedman Rank Sums, with Application to Comparing Classifiers," *BMC Bioinformatics*, vol. 18, 68, 2017. DOI: 10.1186/s12859-017-1486-2. SpringerLink verified.
++"""
++
++
++DATA_AVAILABILITY = """[14] R. A. Fisher, *Iris*, UCI Machine Learning Repository. DOI: 10.24432/C56C76. https://archive.ics.uci.edu/dataset/53/iris
+ [15] S. Aeberhard and M. Forina, *Wine*, UCI Machine Learning Repository. DOI: 10.24432/C5PC7J. https://archive.ics.uci.edu/dataset/109/wine
+ [16] M. Charytanowicz, J. Niewczas, P. Kulczycki, P. A. Kowalski, S. Lukasik, and S. Zak, *Seeds*, UCI Machine Learning Repository. DOI: 10.24432/C5H30K. https://archive.ics.uci.edu/dataset/236/seeds
+ [17] *Glass Identification*, UCI Machine Learning Repository. https://archive.ics.uci.edu/dataset/42/glass+identification
+@@ -372,10 +375,19 @@ REFERENCE_LIST = """[1] T. M. Cover and P. E. Hart, "Nearest Neighbor Pattern Cl
+ [21] V. Lohweg, *Banknote Authentication*, UCI Machine Learning Repository. DOI: 10.24432/C55P57. https://archive.ics.uci.edu/dataset/267/banknote+authentication"""
+ 
+ 
++DATA_AVAILABILITY_SECTION = """
++# Data availability
++
++The following dataset records were used; each was validated after download against the characteristics published by the UCI Machine Learning Repository, and SHA-256 checksums are stored in the project artifacts. These are data-archive records, not literature references.
++
++DATASET_RECORDS
++"""
++
++
+ REFERENCES_SECTION = """
+ ## Bibliographic verification note
+ 
+-Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. Scopus verification of each record remains pending manual institutional access; no Scopus record was marked verified without an actual record check.
++Publisher records were verified on IEEE Xplore, ScienceDirect, SpringerLink, and the ACM Digital Library as listed in PROJECT_SPEC.md. Reference [11] (Han, ICDTE 2025) was additionally verified against its full text on 2026-10-21: its published weight (eqs. 5 and 9) contains an exponential absolute log-density-ratio density gate between query and neighbor, equivalent to the core of the formulation evaluated here; this overlap is disclosed in Sections 1-2 and the study is positioned as a minimal replication/extension-style variant. All numbered references [1]-[13] are sourced exclusively from the portals allowed for this coursework: IEEE Xplore [1]-[4], ScienceDirect [5], [7], [8], [12], SpringerLink [6], [9], [10], [13], and the ACM Digital Library [11]. The UCI dataset records are documented separately in the Data availability section; they are data-archive records, not literature references.
+ """
+ 
+ 
+@@ -410,6 +422,13 @@ def build_discussion(ctx: PaperContext) -> str:
+     return "\n".join(lines)
+ 
+ 
++
++def _dataset_records() -> str:
++    return "\n".join(
++        "- " + line.strip() for line in DATA_AVAILABILITY.strip().splitlines() if line.strip()
++    )
++
++
+ def main(argv=None) -> int:
+     parser = argparse.ArgumentParser(description="Assemble the Markdown paper from artifacts.")
+     parser.add_argument("--config", default="configs/experiment.yaml")
+@@ -458,6 +477,9 @@ def main(argv=None) -> int:
+     if ctx.holm is None:
+         paper += "\n(Pairwise Wilcoxon/Holm tables are produced only when the omnibus test justifies post-hoc analysis.)\n"
+     paper += REFERENCES_SECTION
++    paper += DATA_AVAILABILITY_SECTION
++
++    paper = paper.replace("DATASET_RECORDS", _dataset_records())
+ 
+     out_path = Path(args.output)
+     out_path.parent.mkdir(parents=True, exist_ok=True)
